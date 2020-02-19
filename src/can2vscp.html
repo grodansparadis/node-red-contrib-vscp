@@ -1,0 +1,29 @@
+<script type="text/javascript">
+    RED.nodes.registerType('can2vscp',{
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "font-awesome/fa-road",
+        label: function() {
+            return this.name||"can2vscp";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="can2vscp">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="can2vscp">
+    <p>A node that converts a CAN message object or string to a VSCP event object. Typically used 
+        by a tool, node or application that use VSCP over CAN (CAN4VSCP) to recveive
+        VSCP events.
+    </p>
+</script>
