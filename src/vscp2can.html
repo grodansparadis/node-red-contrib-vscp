@@ -1,18 +1,35 @@
-<script type="text/javascript">
-    RED.nodes.registerType('vscp2can',{
-        category: 'function',
-        color: '#a6bbcf',
-        defaults: {
-            name: {value:""}
-        },
-        inputs:1,
-        outputs:1,
-        icon: "font-awesome/fa-road",
-        label: function() {
-            return this.name||"vscp2can";
-        }
-    });
-</script>
+<!--
+///////////////////////////////////////////////////////////////////////////
+// vscp2can.html
+//
+// socketcan output node.
+//
+// This file is part of the VSCP (https://www.vscp.org)
+//
+// The MIT License (MIT)
+//
+// Copyright © 2020 Ake Hedman, Grodans Paradis AB
+// <info@grodansparadis.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
+-->
 
 <script type="text/html" data-template-name="vscp2can">
     <div class="form-row">
@@ -22,7 +39,95 @@
 </script>
 
 <script type="text/html" data-help-name="vscp2can">
-    <p>A node that converts a VSCP event object to a CAN message object. Typically used 
-        by a tool, node or application that use VSCP over CAN (CAN4VSCP) to send VSCP events.
+    <p>A node that convert VSCP event objects to CAN message objects. 
+        Typically used by a tool, node or application that use VSCP over 
+        CAN (CAN4VSCP) to send VSCP events over a can bus.
     </p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dd> One input is available and is a <b>VSCP event object</b> or a VSCP <b>event on sting</b>
+            form.
+        </dd>
+        <dt class="optional">payload <span class="property-type">object</span></dt>
+        <dd> A VSCP event object typically looks likes this 
+<pre>
+{
+    vscpHead: 3,
+    vscpClass: 10,
+    vscpType: 6,
+    vscpGuid: "FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:40:59:96:00:01",
+    vscpsizeData: 4,
+    vscpsizeData: [0x89,0x82,0xFE,0xDC]
+}
+</pre>
+            <ul>     
+                <li> <b>vscpHead</b> - The VSCP event header</li>
+                <li> <b>vscpClass</b> - The VSCP class for the event. 
+                    Value must be in the range 0-511</li>
+                <li> <b>vscpType</b> - The VSCP type for the event. 
+                    Value must be in the range 0-255</li>
+                <li> <b>vscpsizeData</b> - Number of data bytes. 
+                    Value must be in the range 0-8. </li>           
+                <li> <b>vscpData</b> - An array, a comma separated list or a buffer 
+                    with data bytes. Set to null if no data. Max eight bytes.</li>
+                <li> <b>vscpTimestamp</b> - A micro second timestamp. Can be left 
+                    out and will be set to an appropriate default if it is.</li>
+                <li> <b>vscpDateTime</b> - An ISO time object set to UTC time. Can be 
+                    left out.</li>
+                <li> <b>vscpObid</b> - Event object id. Used by some software and 
+                    can be left out.</li>     
+            </ul>              
+        </dd>          
+        <dt class="optional">payload <span class="property-type">string</span></dt>
+        <dd> A VSCP event on string form
+<pre>
+    "vscpHead,vscpClass,vscpType,vscpObId,vscpDateTime,vscpTimeStamp,vscpGuid,vspData"
+</pre>
+        <dd>
+            See meaning of each part above. vscpObId, vscpTimeStamp and vscpDateTime can 
+            be left out. Data is just a comma separated list of values.
+        </dd>
+    </dl>
+
+    <h3>Outputs</h3>
+        <dl class="node-ports">
+         <li>
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">object</span></dt>
+                <dd>the standard nessage payload is in the form of a 
+                    JSON object with the following content.
+                </dd>    
+<pre>
+{
+    "ext":false,
+    "rtr":false,
+    "canid":123,
+    "dlc":5,
+    "data":[1,2,3,4,5]}
+}
+</pre>
+        <dd>
+            which can be feed to <a href="https://www.npmjs.com/package/node-red-contrib-socketcan">node-red-contrib-socketcan</a> or 
+            <a href="https://www.npmjs.com/package/node-red-contrib-canal">node-red-contrib-canal</a> other node that can receive 
+            CAN frames.
+        </dd>
+         </li>    
+     </dl>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('vscp2can',{
+        category: 'function',
+        color: '#ffe033',
+        defaults: {
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "arrow-in.png",
+        label: function() {
+            return this.name||"vscp2can";
+        }
+    });
 </script>
