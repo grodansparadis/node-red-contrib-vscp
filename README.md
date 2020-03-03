@@ -49,11 +49,8 @@ A CAN message can be on two different forms. Either it can be an object
 
 ```javascript
 {
-  ext: true,
-  rtr: false,
-  canid: 656897,
+  id: 656897,
   timestamp: 0,
-  dlc: 4,
   data: [ 137, 130, 254, 220 ]
 }
 ```
@@ -139,11 +136,8 @@ the output will be a CAN message on this form
 
 ```javascript
 {
-  ext: true,
-  rtr: false,
-  canid: 656897,
+  id: 656897,
   timestamp: 0,
-  dlc: 4,
   data: [ 137, 130, 254, 220 ]
 }
 ```
