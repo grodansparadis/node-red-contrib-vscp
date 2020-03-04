@@ -85,7 +85,7 @@ The output payload is a VSCP event object on the form
     "vscpGuid": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:2a"
     "vscpData": [11,22,33,44,55],
     "vscpTimeStamp": 34565634,
-    vscpDateTime: 2020-02-24T11:10:59.807Z
+    "vscpDateTime": "2020-02-24T11:10:59.807Z"
 }
 ```
 
