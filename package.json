@@ -13,7 +13,8 @@
     "nodes": {
       "vscp2can": "src/vscp2can.js",
       "can2vscp": "src/can2vscp.js",
-      "vscp-config-filter": "src/vscp-config-filter.js"
+      "vscp-config-filter": "src/vscp-config-filter.js",
+      "event2value": "src/event2value.js"
     }
   },
   "repository": {
@@ -32,6 +33,10 @@
     "email": "akhe@grodansparadis.com",
     "url": "https://www.grodansparadis.com"
   },
+  "funding": {
+    "type": "github",
+    "url": "https://www.github.com/grodansparadis"
+  },
   "contributors": [
     {
       "name": "Ake Hedman, Grodans Paradis AB",
@@ -45,7 +50,7 @@
   "homepage": "https://github.com/grodansparadis/node-red-contrib-vscp#readme",
   "dependencies": {
     "node-vscp": "^1.1.12",
-    "node-vscp-class": "^1.0.6",
+    "node-vscp-class": "^1.0.8",
     "node-vscp-type": "^1.0.6",
     "util": "^0.12.2"
   },
@@ -56,7 +61,7 @@
     "node-red": "^1.0.4",
     "node-red-contrib-mock-node": "^0.4.0",
     "node-red-node-test-helper": "^0.2.3",
-    "npm-check-updates": "^4.0.3",
+    "npm-check-updates": "^4.0.4",
     "should": "^13.2.3"
   }
 }

@@ -2,7 +2,7 @@
  "nodes": {
   "node-red": {
    "name": "node-red",
-   "version": "1.0.3-git",
+   "version": "1.0.4-git",
    "local": false,
    "nodes": {
     "inject": {
@@ -361,7 +361,7 @@
   },
   "node-red-contrib-vscp": {
    "name": "node-red-contrib-vscp",
-   "version": "1.0.0",
+   "version": "1.0.6",
    "local": true,
    "nodes": {
     "vscp2can": {
@@ -393,6 +393,16 @@
      "local": true,
      "module": "node-red-contrib-vscp",
      "file": "/home/akhe/development/VSCP/node-red-contrib-vscp/.node-red/node_modules/node-red-contrib-vscp/src/vscp-config-filter.js"
+    },
+    "event2value": {
+     "name": "event2value",
+     "types": [
+      "event2value"
+     ],
+     "enabled": true,
+     "local": true,
+     "module": "node-red-contrib-vscp",
+     "file": "/home/akhe/development/VSCP/node-red-contrib-vscp/.node-red/node_modules/node-red-contrib-vscp/src/event2value.js"
     }
    }
   },
@@ -415,7 +425,7 @@
   },
   "node-red-node-tail": {
    "name": "node-red-node-tail",
-   "version": "0.0.3",
+   "version": "0.1.1",
    "local": false,
    "nodes": {
     "tail": {
