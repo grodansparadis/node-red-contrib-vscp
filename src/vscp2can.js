@@ -29,7 +29,7 @@
 // SOFTWARE.
 //
 
-//"use strict";
+"use strict";
     
 const vscp = require('node-vscp');
 

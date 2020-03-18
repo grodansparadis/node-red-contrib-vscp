@@ -361,7 +361,7 @@
   },
   "node-red-contrib-vscp": {
    "name": "node-red-contrib-vscp",
-   "version": "1.0.7",
+   "version": "1.0.8",
    "local": true,
    "nodes": {
     "vscp2can": {

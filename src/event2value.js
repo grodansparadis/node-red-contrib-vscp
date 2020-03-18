@@ -29,7 +29,7 @@
 // SOFTWARE.
 //
 
-//"use strict";
+"use strict";
     
 const vscp = require('node-vscp');
 const vscpclass = require('node-vscp-class');
@@ -72,7 +72,7 @@ module.exports = function(RED) {
             return s*r*Math.pow(2,e);
         }
 
-        longToByteArray = function(/*long*/long) {
+        var longToByteArray = function(/*long*/long) {
             // we want to represent the input as a 8-bytes array
             var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
         
@@ -85,7 +85,7 @@ module.exports = function(RED) {
             return byteArray;
         };
         
-        byteArrayToLong = function(/*byte[]*/byteArray) {
+        var byteArrayToLong = function(/*byte[]*/byteArray) {
             var value = 0;
             for ( var i = byteArray.length - 1; i >= 0; i--) {
                 value = (value * 256) + byteArray[i];
