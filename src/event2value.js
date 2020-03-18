@@ -72,27 +72,27 @@ module.exports = function(RED) {
             return s*r*Math.pow(2,e);
         }
 
-        var longToByteArray = function(/*long*/long) {
-            // we want to represent the input as a 8-bytes array
-            var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
+        // var longToByteArray = function(/*long*/long) {
+        //     // we want to represent the input as a 8-bytes array
+        //     var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
         
-            for ( var index = 0; index < byteArray.length; index ++ ) {
-                var byte = long & 0xff;
-                byteArray [ index ] = byte;
-                long = (long - byte) / 256 ;
-            }
+        //     for ( var index = 0; index < byteArray.length; index ++ ) {
+        //         var byte = long & 0xff;
+        //         byteArray [ index ] = byte;
+        //         long = (long - byte) / 256 ;
+        //     }
         
-            return byteArray;
-        };
+        //     return byteArray;
+        // };
         
-        var byteArrayToLong = function(/*byte[]*/byteArray) {
-            var value = 0;
-            for ( var i = byteArray.length - 1; i >= 0; i--) {
-                value = (value * 256) + byteArray[i];
-            }
+        // var byteArrayToLong = function(/*byte[]*/byteArray) {
+        //     var value = 0;
+        //     for ( var i = byteArray.length - 1; i >= 0; i--) {
+        //         value = (value * 256) + byteArray[i];
+        //     }
         
-            return value;
-        };
+        //     return value;
+        // };
     
         RED.nodes.createNode(this, config);
         var node = this;
