@@ -49,12 +49,13 @@ module.exports = function(RED) {
         // Convert VSCP event to CAN message
         node.on('input', function(msg, send, done) {
 
+            var ev = null;
             debuglog(msg.payload);
 
             // OK with string form
             if ( typeof msg.payload === 'string' ) { 
                 debuglog("String input: ", msg.payload);               
-                var ev = new vscp.Event();
+                ev = new vscp.Event();
                 ev.setFromString(msg.payload);
                 debuglog("Event object: ", ev);
                 msg.payload = vscp.convertEventToCanMsg(ev);
@@ -66,7 +67,7 @@ module.exports = function(RED) {
             }
             else {
                 debuglog("JSON object",msg.payload);
-                var ev = new vscp.Event(msg.payload);
+                ev = new vscp.Event(msg.payload);
                 debuglog(ev);
                 msg.payload = vscp.convertEventToCanMsg(ev);
                 debuglog(msg.payload);

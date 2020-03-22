@@ -49,7 +49,7 @@
   },
   "homepage": "https://github.com/grodansparadis/node-red-contrib-vscp#readme",
   "dependencies": {
-    "node-vscp": "^1.1.13",
+    "node-vscp": "^1.1.14",
     "node-vscp-class": "^1.0.8",
     "node-vscp-type": "^1.0.6",
     "util": "^0.12.2"

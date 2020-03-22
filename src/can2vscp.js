@@ -48,6 +48,7 @@ module.exports = function(RED) {
 
         node.on('input', function(msg, send, done) {
 
+            var frame = {};
             debuglog(msg.payload);
 
             // OK with string form
@@ -65,7 +66,7 @@ module.exports = function(RED) {
                     
                     debuglog("FD Frame");
 
-                    var frame = {};
+                    frame = {};
 
                     frame.canid  = parseInt(msg.payload.split("##")[0],16);
                     debuglog("frame.id " + frame.id);
@@ -100,7 +101,7 @@ module.exports = function(RED) {
 
                     debuglog("CAN Frame");
 
-                    var frame = {};
+                    frame = {};
 
                     let id = msg.payload.split("#")[0];
                     frame.canid  = parseInt(id,16);

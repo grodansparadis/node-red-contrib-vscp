@@ -44,6 +44,10 @@ module.exports = function(RED) {
     
     function eventToValueNode(config) {
 
+        var s = 0;
+        var r = 0;
+        var e = 0;
+
         // https://stackoverflow.com/questions/24524578/reading-c-float-value-from-buffer-in-javascript
         function f32bit_double(x) {
             // handle sign bit
@@ -100,12 +104,13 @@ module.exports = function(RED) {
         // Convert VSCP measurement event to value
         node.on('input', function(msg, send, done) {
 
+            var ev = null;
             debuglog(msg.payload);
 
             // OK with string form
             if ( typeof msg.payload === 'string' ) { 
                 debuglog("String input: ", msg.payload);               
-                var ev = new vscp.Event();
+                ev = new vscp.Event();
                 ev.setFromString(msg.payload);
                 debuglog("Event object: ", ev);
                 msg.event = ev.toJSONObj();
@@ -117,7 +122,7 @@ module.exports = function(RED) {
                          (12 == ev.vscpClass) ||
                          (13 == ev.vscpClass) ||
                          (14 == ev.vscpClass) ) {
-                        msg.payload = decodeClass10(ev.vscpData);
+                        msg.payload = vscp.decodeClass10(ev.vscpData);
                     }
                     // CLASS1.MEASUREMENT64
                     else if ( (60 == ev.vscpClass) ||
@@ -125,7 +130,7 @@ module.exports = function(RED) {
                               (62 == ev.vscpClass) ||
                               (63 == ev.vscpClass) ||
                               (64 == ev.vscpClass) ) {
-                        msg.payload = decodeClass60(ev.vscpData);
+                        msg.payload = vscp.decodeClass60(ev.vscpData);
                     }
                     // CLASS1.MEASUREZONE
                     else if ( (65 == ev.vscpClass) ||
@@ -133,7 +138,7 @@ module.exports = function(RED) {
                               (67 == ev.vscpClass) ||
                               (68 == ev.vscpClass) ||
                               (69 == ev.vscpClass) ) {
-                        msg.payload = decodeClass65(ev.vscpData);
+                        msg.payload = vscp.decodeClass65(ev.vscpData);
                     }
                     // CLASS1.MEASUREMENT32
                     else if ( (70 == ev.vscpClass) ||
@@ -141,7 +146,7 @@ module.exports = function(RED) {
                               (72 == ev.vscpClass) ||
                               (73 == ev.vscpClass) ||
                               (74 == ev.vscpClass) ) {
-                        msg.payload = decodeClass60(ev.vscpData);
+                        msg.payload = vscp.decodeClass60(ev.vscpData);
                     }
                     // CLASS1.SETVALUEZONE
                     else if ( (85 == ev.vscpClass) ||
@@ -149,7 +154,7 @@ module.exports = function(RED) {
                               (87 == ev.vscpClass) ||
                               (88 == ev.vscpClass) ||
                               (89 == ev.vscpClass) ) {
-                        msg.payload = decodeClass60(ev.vscpData);
+                        msg.payload = vscp.decodeClass60(ev.vscpData);
                     }
                     // CLASS2.MEASUREMENT_STR
                     else if ( 1040 == ev.vscpClass ) {
@@ -169,7 +174,7 @@ module.exports = function(RED) {
             }
             else {
                 debuglog("JSON object",msg.payload);
-                var ev = new vscp.Event(msg.payload);
+                ev = new vscp.Event(msg.payload);
                 debuglog(ev);
                 msg.payload = vscp.convertEventToCanMsg(ev);
                 debuglog(msg.payload);
