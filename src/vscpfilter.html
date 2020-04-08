@@ -1,0 +1,143 @@
+<!--
+///////////////////////////////////////////////////////////////////////////
+// vscpfilter.html
+//
+// This file is part of the VSCP (https://www.vscp.org)
+//
+// The MIT License (MIT)
+//
+// Copyright © 2020 Ake Hedman, Grodans Paradis AB
+// <info@grodansparadis.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
+-->
+
+<script type="text/html" data-template-name="vscpfilter">
+    <div class="form-row">
+        <label for="node-input-vscppriority"><i class="icon-tag"></i> VSCP Priority</label>
+        <input type="text" id="node-input-vscppriority" placeholder="VSCP Priority">
+    </div>
+    <div class="form-row">
+        <label for="node-input-vscpclass"><i class="icon-tag"></i> VSCP Class</label>
+        <input type="text" id="node-input-vscpclass" placeholder="VSCP Class">
+    </div>
+    <div class="form-row">
+        <label for="node-input-vscptype"><i class="icon-tag"></i> VSCP Type</label>
+        <input type="text" id="node-input-vscptype" placeholder="VSCP Type">
+    </div>
+    <div class="form-row">
+        <label for="node-input-vscpguid"><i class="icon-tag"></i> VSCP GUID</label>
+        <input type="text" id="node-input-vscpguid" placeholder="VSCP GUID">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="vscpfilter">
+    <p>A node that filters VSCP events on priority, 
+        VSCP class, VSCP type and VSCP GUID.
+    </p>
+    <p>
+        <b>Priority: </b> Lower value is higher priority. So 
+        setting to zero only accept events of highest priority. 
+        Setting to one accept events with priority 0 and 1 and 
+        so on. Lowest priority is seven.
+    </p>   
+    <p>
+        <b>VSCP class: </b> Set to VSCP class that should be accepted. 
+    </p> 
+    <p>
+        <b>VSCP type: </b> Set to VSCP type that should be accepted. 
+    </p>
+    <p>
+        <b>VSCP GUID: </b> Set to VSCP GUID that should be accepted. It is 
+        possible to compare against a partial GUID and in this case the GUID 
+        will be checked from the left to the right (MSB->LSB). So setting GUID
+        to "FF:F8:99" will accept all events with GUID's starting with this 
+        sequency.
+    </p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dd> One input is available and is a <b>VSCP event object</b>
+        </dd>
+        <dt class="optional">payload <span class="property-type">object</span></dt>
+        <dd> A VSCP event object typically looks likes this 
+<pre>
+{
+    vscpHead: 3,
+    vscpClass: 10,
+    vscpType: 6,
+    vscpGuid: "FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:40:59:96:00:01",
+    vscpData: [0x89,0x82,0xFE,0xDC]
+}
+</pre>
+            <ul>     
+                <li> <b>vscpHead</b> - The VSCP event header</li>
+                <li> <b>vscpClass</b> - The VSCP class for the event.</li>
+                <li> <b>vscpType</b> - The VSCP type for the event.</li>           
+                <li> <b>vscpData</b> - An array, a comma separated list or a buffer 
+                    with data bytes. Set to null if no data. Max 512 bytes.</li>
+                <li> <b>vscpTimestamp</b> - A micro second timestamp. Can be left 
+                    out and will be set to an appropriate default if it is.</li>
+                <li> <b>vscpDateTime</b> - An ISO time object set to UTC time. Can be 
+                    left out.</li>
+                <li> <b>vscpObid</b> - Event object id. Used by some software and 
+                    can be left out.</li>     
+            </ul>              
+        </dd>          
+ 
+    </dl>
+
+    <h3>Outputs</h3>
+    <dl class="node-ports">
+        <li>
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">object</span></dt>
+                <dd>If a VSCP event is accepted by the filters
+                    the original event object on the input is sent here.
+                </dd>    
+
+            </dl>
+        </li>    
+    </dl>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('vscpfilter',{
+        category: 'function',
+        color: '#ffe033',
+        defaults: {
+            vscppriority: { value : "" },
+            vscpclass: { value : "" },
+            vscptype: { value : "" },
+            vscpguid: { value : "" },
+            name: { value : "" }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "arrow-in.png",
+        label: function() {
+            return this.name||"vscpfilter";
+        }
+    });
+</script>

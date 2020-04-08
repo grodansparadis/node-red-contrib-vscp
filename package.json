@@ -13,6 +13,7 @@
     "nodes": {
       "vscp2can": "src/vscp2can.js",
       "can2vscp": "src/can2vscp.js",
+      "vscpfilter": "src/vscpfilter.js",
       "vscp-config-filter": "src/vscp-config-filter.js",
       "event2value": "src/event2value.js"
     }
