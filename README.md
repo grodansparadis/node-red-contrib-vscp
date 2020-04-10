@@ -39,6 +39,65 @@ The node is located in the function section of the palette.
 
 Typically this node is used together with a node such as [node-red-contrib-socketcan](https://www.npmjs.com/package/node-red-contrib-socketcan) or [node-red-contrib-canal](https://www.npmjs.com/package/node-red-contrib-canal) 
 
+---
+
+## vscpfilter node
+![vscpfilter](./images/vscpfilter.png)
+
+The flow of VSCP events normally is a flow of events from many different sources and they can for example be measurements from different sensors or information about something that just occurred on a remote node. At some point in a flow you usually need to filter out the event(s) you are interested in so you can react on them or process them further.
+
+You have several options to do this filtering. One way is to filter at the source. A VSCP daemon connection,  VSCP over MQTT connection and CAN4VSCP all allow for filtering at the source. This is also usual the most effective filtering when it comes to resource use.
+
+The other option and in many cases most convenient is to use this node. It may be easier to open a connection to a VSCP flow and then filter out flows of different types with with this node. 
+
+You can filter on 
+
+* VSCP priority
+* VSCP class
+* VSCP type
+* VSCP GUID
+
+So if you are only interested in events from a specific node enter it's full GUID and leave all other fields blank. This will get you all events from that node. Not entering a value of a filed means **don't care** and this will field will not be checked.
+
+If you are only interested in events from a specific interface on the VSCP daemon we know that the GUID is the same for all events coming from this interface in the first fourteen of the sixteen positions. So enter just the first fourteen values of the GUID in the filter and you will get all events from that interface on the output.
+
+So if event GUID is
+
+```bash
+FF:FF:FF:FF:FF:FF:FF:F5:02:00:00:00:10:44:00:44
+```
+
+set GUID filter to
+
+```bash
+FF:FF:FF:FF:FF:FF:FF:F5:02:00:00:00:10:44
+```
+
+and you will get all events that go through that interface.
+
+The most common case is probably to filter out a specific event from a specific remote node. In this case enter the nodes GUID, VSCP class and VSCP type.
+
+Priority filtering is a bit special compared to the other fields. First one must remember that zero is highest priority and seven is the lowest in VSCP. Entering a value in priority field mean that all events with a priority equal or less than the value will be passed through. Setting the value to zero will only let through events with the highest priority. Setting to seven means all events will be passed through. This last case is the same as leaving the field blank.
+
+## event2value node
+![event2value](./images/event2value.png)
+
+For a new VSCP user the measurement classes in VSCP may be both strange at first and even hard to understand. Generally one can say that it is advisable to use Level II measurements in higher level applications like node-red. The VSCP daemon for example have the ability to translate all measurement events to level II events. 
+
+At level II there is two measurement classes available, one that present measurement values on string form [CLASS2.MEASUREMENT_STR](https://docs.vscp.org/spec/latest/#/./class2.measurement_str) and one that present measurement values on floating point form [CLASS2.MEASUREMENT_STR](https://docs.vscp.org/spec/latest/#/./class2.measurement_float).
+
+For level I events there are a lot more classes defined that carry measurements. Some with codings that are designd to be useful for low end hardware and that might be all but easy to use directly for high end applications. 
+
+The event2value node will do one of two things.
+
+- It will add fields **value**,  **unit**, **sensorindex** and in cases where it's relevant **index**, **zone** and **subzone** to the event object before it is transferred to the output o the node. This is the **default**.
+- It will replace msg.payload with the measurement value on floating point form. The event is still available as msg.event and also here the value and the other fields is added to the event object.
+
+
+---
+
+
+
 ### How to use
 
 ![flow-can2vscp](./images/flow-can2vscp.png)
