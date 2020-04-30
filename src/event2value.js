@@ -44,141 +44,115 @@ module.exports = function(RED) {
     
     function eventToValueNode(config) {
 
-        var s = 0;
-        var r = 0;
-        var e = 0;
-
-        // https://stackoverflow.com/questions/24524578/reading-c-float-value-from-buffer-in-javascript
-        function f32bit_double(x) {
-            // handle sign bit
-            if (x < 0) {
-                x += 2147483648;
-                s = -1;
-            } else {
-                s = 1;
-            }
-        
-            r = x % 8388608; // raw significand
-            e = (x-r) >> 23; // raw exponent
-        
-            if (e === 0) {
-                // subnormal
-                e -= 126;
-                r = r/8388608;
-            } else if (e == 255) {
-                // inf or nan
-                return r === 0 ? s*Infinity : NaN;
-            } else {
-                // normalised
-                e -= 127;
-                r = 1+r/8388608;
-            }
-            return s*r*Math.pow(2,e);
-        }
-
-        // var longToByteArray = function(/*long*/long) {
-        //     // we want to represent the input as a 8-bytes array
-        //     var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
-        
-        //     for ( var index = 0; index < byteArray.length; index ++ ) {
-        //         var byte = long & 0xff;
-        //         byteArray [ index ] = byte;
-        //         long = (long - byte) / 256 ;
-        //     }
-        
-        //     return byteArray;
-        // };
-        
-        // var byteArrayToLong = function(/*byte[]*/byteArray) {
-        //     var value = 0;
-        //     for ( var i = byteArray.length - 1; i >= 0; i--) {
-        //         value = (value * 256) + byteArray[i];
-        //     }
-        
-        //     return value;
-        // };
-    
         RED.nodes.createNode(this, config);
         var node = this;
-    
+
         // Convert VSCP measurement event to value
         node.on('input', function(msg, send, done) {
 
-            var ev = null;
-            debuglog(msg.payload);
+            // Accept string/object
+            var ev = new vscp.Event(msg.payload);
 
-            // OK with string form
-            if ( typeof msg.payload === 'string' ) { 
-                debuglog("String input: ", msg.payload);               
-                ev = new vscp.Event();
-                ev.setFromString(msg.payload);
-                debuglog("Event object: ", ev);
-                msg.event = ev.toJSONObj();
-                msg.payload = NaN;  // Be pessimistic
-                if ( vscp.isMeasurement(ev.vscpClass) ) {
-                    // CLASS1.MEASUREMENT
-                    if ( (10 == ev.vscpClass) ||
-                         (11 == ev.vscpClass) || 
-                         (12 == ev.vscpClass) ||
-                         (13 == ev.vscpClass) ||
-                         (14 == ev.vscpClass) ) {
-                        msg.payload = vscp.decodeClass10(ev.vscpData);
-                    }
-                    // CLASS1.MEASUREMENT64
-                    else if ( (60 == ev.vscpClass) ||
-                              (61 == ev.vscpClass) ||
-                              (62 == ev.vscpClass) ||
-                              (63 == ev.vscpClass) ||
-                              (64 == ev.vscpClass) ) {
-                        msg.payload = vscp.decodeClass60(ev.vscpData);
-                    }
-                    // CLASS1.MEASUREZONE
-                    else if ( (65 == ev.vscpClass) ||
-                              (66 == ev.vscpClass) ||
-                              (67 == ev.vscpClass) ||
-                              (68 == ev.vscpClass) ||
-                              (69 == ev.vscpClass) ) {
-                        msg.payload = vscp.decodeClass65(ev.vscpData);
-                    }
-                    // CLASS1.MEASUREMENT32
-                    else if ( (70 == ev.vscpClass) ||
-                              (71 == ev.vscpClass) ||
-                              (72 == ev.vscpClass) ||
-                              (73 == ev.vscpClass) ||
-                              (74 == ev.vscpClass) ) {
-                        msg.payload = vscp.decodeClass60(ev.vscpData);
-                    }
-                    // CLASS1.SETVALUEZONE
-                    else if ( (85 == ev.vscpClass) ||
-                              (86 == ev.vscpClass) ||
-                              (87 == ev.vscpClass) ||
-                              (88 == ev.vscpClass) ||
-                              (89 == ev.vscpClass) ) {
-                        msg.payload = vscp.decodeClass60(ev.vscpData);
-                    }
-                    // CLASS2.MEASUREMENT_STR
-                    else if ( 1040 == ev.vscpClass ) {
-                        var tempArray = ev.vscpData.map((x) => {return String.fromCharCode(x);});
-                        msg.payload = parseFloat(tempArray.join(''));
-                    }
-                    // CLASS2.MEASUREMENT_FLOAT
-                    else if ( 1060 == ev.vscpClass ) {
-                        var float64 = f32bit_double(ev.vscpData);
-                    }
-                }
-                debuglog("msg.payload",msg.payload);
+            // Do nothing iof no measurement
+            if ( !vscp.isMeasurement(ev.vscpClass) ) {
+                done();
+                return;
             }
-            else if (msg.payload instanceof vscp.Event ) {
-                debuglog("Event");
-                msg.payload = vscp.convertEventToCanMsg(msg.payload);
+
+            // Init meaurement object with defaulrs
+            msg.measurement = {};
+            msg.measurement.value = NaN;
+            msg.measurement.unit= 0;
+            msg.measurement.sensorindex = 0;
+            msg.measurement.index = 0;
+            msg.measurement.zone = 0;
+            msg.measurement.subzone = 0;
+
+            var _class = ev.vscpClass;
+            var _data = ev.vscpData;
+
+            // If we have a level I over level II class the first
+            // sixteen bytes of data is the interface GUID
+            if ( (ev.vscpClass >= 512) && (ev.vscpClass < 1024) ) {
+                // offset = 16;
+                _data = data.slice(16);
+                _class -= 512; 
             }
-            else {
-                debuglog("JSON object",msg.payload);
-                ev = new vscp.Event(msg.payload);
-                debuglog(ev);
-                msg.payload = vscp.convertEventToCanMsg(ev);
-                debuglog(msg.payload);
+
+            // CLASS1.MEASUREMENT
+            if ( (vscpclass.VSCP_CLASS1_MEASUREMENT == _class) ||
+                    (vscpclass.VSCP_CLASS1_MEASUREMENTX1 == _class) || 
+                    (vscpclass.VSCP_CLASS1_MEASUREMENTX2 == _class) ||
+                    (vscpclass.VSCP_CLASS1_MEASUREMENTX3 == _class) ||
+                    (vscpclass.VSCP_CLASS1_MEASUREMENTX4 == _class) ) {
+                msg.measurement.unit = vscp.getUnit(_data[0]);
+                msg.measurement.sensorindex = vscp.getSensorIndex(_data[0]);                        
+                msg.measurement.value = vscp.decodeMeasurementClass10(_data);                
             }
+            // CLASS1.MEASUREMENT64
+            else if ( ( vscpclass.VSCP_CLASS1_MEASUREMENT64 == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X1 == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X2 == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X3 == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X4 == _class) ) {
+                msg.measurement.unit = 0:
+                msg.measurement.sensorindex = 0;
+                msg.measurement.value = vscp.decodeMeasurementClass60(_data);
+            }
+            // CLASS1.MEASUREZONE
+            else if ( (vscpclass.VSCP_CLASS1_MEASUREZONE == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREZONEX1 == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREZONEX2 == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREZONEX3 == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREZONEX4 == _class) ) {
+                msg.measurement.index = _data[0]; 
+                msg.measurement.zone = _data[1];
+                msg.measurement.subzone = _data[2];                           
+                msg.measurement.unit = vscp.getUnit(_data[3]);
+                msg.measurement.sensorindex = vscp.getSensorIndex(_data[3]);
+                msg.measurement.value = vscp.decodeMeasurementClass65(_data);
+            }
+            // CLASS1.MEASUREMENT32
+            else if ( (vscpclass.VSCP_CLASS1_MEASUREMENT32 == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X1 == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X2 == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X3 == _class) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X4 == _class) ) {
+                msg.measurement.unit = 0:
+                msg.measurement.sensorindex = 0;            
+                msg.measurement.value = vscp.decodeClass60(_data);
+            }
+            // CLASS1.SETVALUEZONE
+            else if ( (vscpclass.VSCP_CLASS1_SETVALUEZONE == _class) ||
+                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX1 == _class) ||
+                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX2 == _class) ||
+                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX3 == _class) ||
+                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX4 == _class) ) {
+                msg.measurement.index = _data[0]; 
+                msg.measurement.zone = _data[1];
+                msg.measurement.subzone = _data[2];                           
+                msg.measurement.unit = vscp.getUnit(_data[3]);
+                msg.measurement.sensorindex = vscp.getSensorIndex(_data[3]);            
+                msg.measurement.value = vscp.decodeMeasurementClass85(_data);
+            }
+            // CLASS2.MEASUREMENT_STR
+            else if ( vscpclass.VSCP_CLASS2_MEASUREMENT_STR == _class ) {
+                msg.measurement.sensorindex = _data[0]; 
+                msg.measurement.zone = _data[1];
+                msg.measurement.subzone = _data[2];                           
+                msg.measurement.unit = _data[3];
+                msg.measurement.value = vscp.decodeMeasurementClass1040(ev.vscpData);
+            }
+            // CLASS2.MEASUREMENT_FLOAT
+            else if ( vscpclass.VSCP_CLASS2_MEASUREMENT_FLOAT == _class ) {
+                msg.measurement.sensorindex = _data[0]; 
+                msg.measurement.zone = _data[1];
+                msg.measurement.subzone = _data[2];                           
+                msg.measurement.unit = _data[3];
+                msg.measurement.value = vscp.decodeMeasurementClass1060(ev.vscpData);
+            }
+
+            debuglog("msg.payload",msg.measurement);
 
             // If this is pre-1.0, 'send' will be undefined, so fallback to node.send
             send = send || function() {

@@ -50,19 +50,19 @@
   },
   "homepage": "https://github.com/grodansparadis/node-red-contrib-vscp#readme",
   "dependencies": {
-    "node-vscp": "^1.1.14",
-    "node-vscp-class": "^1.0.8",
-    "node-vscp-type": "^1.0.6",
+    "node-vscp": "^1.1.15",
+    "node-vscp-class": "^1.0.9",
+    "node-vscp-type": "^1.0.7",
     "util": "^0.12.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "eslint": "^6.8.0",
-    "mocha": "^7.1.1",
-    "node-red": "^1.0.4",
+    "mocha": "^7.1.2",
+    "node-red": "^1.0.6",
     "node-red-contrib-mock-node": "^0.4.0",
     "node-red-node-test-helper": "^0.2.3",
-    "npm-check-updates": "^4.0.4",
+    "npm-check-updates": "^4.1.2",
     "should": "^13.2.3"
   }
 }
