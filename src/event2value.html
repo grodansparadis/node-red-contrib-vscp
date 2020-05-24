@@ -30,6 +30,29 @@
 -->
 
 <script type="text/html" data-template-name="event2value">
+    
+    <div class="form-row">
+        <label style="margin-left: 100px; width: 70%">
+            <input
+                type="checkbox"
+                id="node-input-btransparent"
+                placeholder=""
+                style="width: 20px; margin: -4px 0 0 0;"
+            />
+            Transparent
+        </label>
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 100px; width: 70%">
+            <input
+                type="checkbox"
+                id="node-input-bvalue2payload"
+                placeholder=""
+                style="width: 20px; margin: -4px 0 0 0;"
+            />
+            Value to payload
+        </label>
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -37,14 +60,41 @@
 </script>
 
 <script type="text/html" data-help-name="event2value">
-    <p>A node that convert VSCP measurement event objects to a 
+    <dd>A node that convert VSCP measurement event objects to a 
         measurement value. The unit, sensor index and original 
         event is preserved. 
-    </p>
+    </dd>
+    <dd>
+        Measurements are present on the output under the msg.measurement 
+        tag. Full VSCP event data will still be in msg.payload.
+    </dd>
+
+    <dd>
+        The measurement tag have the following content
+    <pre>
+{
+    value: 1234
+    unit: 123;
+    sensorindex: 123,
+    index: 123
+    zone: 123
+    subzone: 123
+}
+    </pre>
+    When index/zone and subzone is not available for the 
+    measurement they will be set to zero.
+    </dd>
+
+    <dd>
+        If Transparent checkbox is checked all event are feed to the outputs
+        regardless if they are measurement events or not. 
+        If it is not checked only measurement event will be feed to the 
+        output.
+    </dd>
 
     <h3>Inputs</h3>
     <dl class="message-properties">
-        <dd> One input is available and is a <b>VSCP event object</b> or a VSCP <b>event on sting</b>
+        <dd> One input is available and is a <b>VSCP event object</b> or a VSCP <b>event on string</b>
             form.
         </dd>
         <dt class="optional">payload <span class="property-type">object</span></dt>
@@ -81,11 +131,12 @@
         <dd> A VSCP event on string form
     <pre>
     "vscpHead,vscpClass,vscpType,vscpObId,vscpDateTime,vscpTimeStamp,vscpGuid,vspData"
-</pre>
-        <dd>
-            See meaning of each part above. vscpObId, vscpTimeStamp and vscpDateTime can 
-            be left out. Data is just a comma separated list of values.
-        </dd>
+    </pre>
+    <dd>
+        See meaning of each part above. vscpObId, vscpTimeStamp and vscpDateTime can 
+        be left out. Data is just a comma separated list of values.
+    </dd>
+    
     </dl>
 
     <h3>Outputs</h3>
@@ -93,10 +144,21 @@
         <li>
             <dl class="message-properties">
                 <dt>payload <span class="property-type">number</span></dt>
-                <dd>If a VSCP measurement event is feed into the node 
-                    the msg.payload will be set to the value. msg.event 
-                    will hold the original event with the added unit, 
-                    value and sensor index items.
+                <dd>
+                    For a measurement event msg.measurement will be 
+                    added to the msg object. The msg.payload will hold the 
+                    original event. 
+                </dd>
+                <dd>
+                    If The transparent checkbox is checked all events will 
+                    be let trough and will be available on the output. If not
+                    only measurement events will be present.
+                </dd>
+                <dd>
+                    If the value to payload checkbox is checked the 
+                    msg.payload will be set to the value. msg.event 
+                    will hold the original event with the added measurement
+                    tag.
                 </dd>    
 
             </dl>
@@ -106,9 +168,11 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('event2value',{
-        category: 'function',
+        category: 'vscp',
         color: '#ffe033',
         defaults: {
+            btransparent: { value: 0 },
+            bvalue2payload: { value: 0 },
             name: {value:""}
         },
         inputs:1,

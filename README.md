@@ -4,7 +4,7 @@
 <img src="https://vscp.org/images/logo.png" width="100">
 
 # node-red-contrib-vscp
-A collection of VSCP (Very Simple Control Protocol) nodes that support building of IoT, m2m and automation related flows. 
+A collection of VSCP (Very Simple Control Protocol) nodes that support building of IoT, m2m and automation related flows.
 
 This assumes you have Node-RED already installed and working, if you need to install Node-RED see [here](https://nodered.org/docs/getting-started/installation)
 
@@ -46,11 +46,11 @@ Typically this node is used together with a node such as [node-red-contrib-socke
 
 The flow of VSCP events normally is a flow of events from many different sources and they can for example be measurements from different sensors or information about something that just occurred on a remote node. At some point in a flow you usually need to filter out the event(s) you are interested in so you can react on them or process them further.
 
-You have several options to do this filtering. One way is to filter at the source. A VSCP daemon connection,  VSCP over MQTT connection and CAN4VSCP all allow for filtering at the source. This is also usual the most effective filtering when it comes to resource use.
+You have several options to do this filtering. One way is to filter at the source. A VSCP daemon connection,  VSCP over MQTT connection and CAN4VSCP all allow for filtering at the source. This is also usual the most effective filtering when it comes to resource uses.
 
-The other option and in many cases most convenient is to use this node. It may be easier to open a connection to a VSCP flow and then filter out flows of different types with with this node. 
+The other option and in many cases most convenient is to use this node. It may be easier to open a connection to a VSCP flow and then filter out flows of different types with this node.
 
-You can filter on 
+You can filter on
 
 * VSCP priority
 * VSCP class
@@ -64,35 +64,40 @@ If you are only interested in events from a specific interface on the VSCP daemo
 So if event GUID is
 
 ```bash
-FF:FF:FF:FF:FF:FF:FF:F5:02:00:00:00:10:44:00:44
+FF:FF:FF:FF:FF:FF:FF:F5:02:00:00:00:10:01:00:44
 ```
 
 set GUID filter to
 
 ```bash
-FF:FF:FF:FF:FF:FF:FF:F5:02:00:00:00:10:44
+FF:FF:FF:FF:FF:FF:FF:F5:02:00:00:00:10:01
 ```
 
 and you will get all events that go through that interface.
 
 The most common case is probably to filter out a specific event from a specific remote node. In this case enter the nodes GUID, VSCP class and VSCP type.
 
-Priority filtering is a bit special compared to the other fields. First one must remember that zero is highest priority and seven is the lowest in VSCP. Entering a value in priority field mean that all events with a priority equal or less than the value will be passed through. Setting the value to zero will only let through events with the highest priority. Setting to seven means all events will be passed through. This last case is the same as leaving the field blank.
+Priority filtering is a bit special compared to the other fields. First one must remember that zero is highest priority and seven is the lowest priority in VSCP. Entering a value in teh priority field mean that all events with a priority equal or less than the value will be passed through. Setting the value to zero will only let through events with the highest priority. Setting to seven means all events will be passed through. This last case is the same as leaving the field blank.
 
 ## event2value node
 ![event2value](./images/event2value.png)
 
-For a new VSCP user the measurement classes in VSCP may be both strange at first and even hard to understand. Generally one can say that it is advisable to use Level II measurements in higher level applications like node-red. The VSCP daemon for example have the ability to translate all measurement events to level II events. 
+For a new VSCP user the measurement classes in VSCP may be both strange at first and even hard to understand. Think of them as different ways for a limited resources device to send data values to a higher level world that have the resources to decode the data. Generally one can say that it is advisable to use Level II measurements in higher level applications like node-red. The VSCP daemon for example have the ability to automatically translate all measurement events from drivers to level II events.
 
 At level II there is two measurement classes available, one that present measurement values on string form [CLASS2.MEASUREMENT_STR](https://docs.vscp.org/spec/latest/#/./class2.measurement_str) and one that present measurement values on floating point form [CLASS2.MEASUREMENT_STR](https://docs.vscp.org/spec/latest/#/./class2.measurement_float).
 
-For level I events there are a lot more classes defined that carry measurements. Some with codings that are designd to be useful for low end hardware and that might be all but easy to use directly for high end applications. 
+The event2value node can handle all measurement classes and translate the data they carry to a measurement value and still preserve important information such as unit of the data and the origin of the measurement.
 
 The event2value node will do one of two things.
 
-- It will add fields **value**,  **unit**, **sensorindex** and in cases where it's relevant **index**, **zone** and **subzone** to the event object before it is transferred to the output o the node. This is the **default**.
-- It will replace msg.payload with the measurement value on floating point form. The event is still available as msg.event and also here the value and the other fields is added to the event object.
+- It will add fields *value*,  *unit*, *sensorindex* and in cases where it's relevant **index**, **zone** and *subzone* to the msg object under the tag __msg.measurement__ before it is transferred to the output of the node. This is the **default**. The payload will contain the original event.
+- It will replace msg.payload with the measurement value. The event is still available as msg.event, and meassage relevant data such as unit is in msg.measurement. The checkbox **Value to payload** should be checked for this to happen.
 
+If the checkbox **Transparent** is checked all events will be feed through the node even if they are not measurement events. This means that the msg.measurement will be added to all measurements events but not to other events and therefore look like any other VSCP event for nodes that are VSCP aware.
+
+Future VSCP nodes may relay on the payload carrying a VSCP event for there processing. It is therefore a better choice to write code that use _msg.measurement.value_ instead of moving the value to msg.payload. At least this is true in all cases except when the node is places last in the stream and a value is left to be processed by displaying it, do calculations etc. But the choice is in the end of course up to the user.
+
+Input can be on VSCP event object form or VSCP string form. Output is always on VSCP event object form.
 
 ---
 
@@ -127,7 +132,7 @@ When VSCP is transferred over CAN ([CAN4VSCP](https://docs.vscp.org/spec/latest/
 Examples of can messages on string form
 
 ```javascript
-123#DEADBEEF 
+123#DEADBEEF
 5AA#  
 123##1
 213##311  
@@ -207,6 +212,22 @@ the output will be a CAN message on this form
 [{"id":"5f847c11.bd3ef4","type":"vscp2can","z":"85e70aa5.e41e7","name":"","x":320,"y":420,"wires":[["abae2436.9249f"]]},{"id":"740073f2.bc2394","type":"inject","z":"85e70aa5.e41e7","name":"JSON array","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[11,22,33,44,55],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":130,"y":420,"wires":[["5f847c11.bd3ef4"]]},{"id":"abae2436.9249f","type":"debug","z":"85e70aa5.e41e7","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","targetType":"msg","x":490,"y":420,"wires":[]},{"id":"6c346126.bfba58","type":"inject","z":"85e70aa5.e41e7","name":"String","topic":"","payload":"0,20,3,,2001-11-02T18:00:01,,-,0,1,35","payloadType":"str","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":150,"y":500,"wires":[["5f847c11.bd3ef4"]]},{"id":"7df9ce7e.b5cc98","type":"inject","z":"85e70aa5.e41e7","name":"JSON str","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":\"100,200,99\",\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":140,"y":460,"wires":[["5f847c11.bd3ef4"]]}]
 ```
 
+### How to use
+
+![Example flow for event2value](./images/event2value_flow.png)
+
+Any source that issues VSCP events can be used to feed events into the node. The [node-red-contrib-vscp-tcp](https://flows.nodered.org/node/node-red-contrib-vscp-tcp) and [node-red-contrib-canal](https://flows.nodered.org/node/node-red-contrib-canal) are often used but it can equally well be a MQTT node or some other source of events.
+
+![pi11 to event2vscp](./images/pi11_to_event2value.png)
+
+The sample flow below inject examples with all measurement classes and output results. There is one standard msg.measurement and one value -> payload translation present for all paths.
+
+### Sample flow
+
+```javascript
+[{"id":"7b300eeb.eca0e","type":"tab","label":"Measurements","disabled":false,"info":""},{"id":"84a31eaf.5f1f98","type":"event2value","z":"7b300eeb.eca0e","btransparent":false,"bvalue2payload":false,"name":"event2value measurement","x":760,"y":180,"wires":[["4ff276ee.97a71"]]},{"id":"7e415e1.56527a","type":"inject","z":"7b300eeb.eca0e","name":"694600","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[136,2,27,34],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":420,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"4ff276ee.97a71","type":"debug","z":"7b300eeb.eca0e","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","x":990,"y":180,"wires":[]},{"id":"ffd0f467.4a8028","type":"inject","z":"7b300eeb.eca0e","name":"Bits","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[0,170,170],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":100,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"45d576da.8c5bc8","type":"inject","z":"7b300eeb.eca0e","name":"[ 2, 27, 34 ]","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[32,2,27,34],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":180,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"de16eff7.222bc8","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: bits","info":"","x":120,"y":60,"wires":[]},{"id":"263e95d3.b51262","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: normalized","info":"","x":140,"y":380,"wires":[]},{"id":"d23145ae.c5d3c8","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: bytes","info":"","x":130,"y":140,"wires":[]},{"id":"e741f244.14599","type":"event2value","z":"7b300eeb.eca0e","btransparent":false,"bvalue2payload":true,"name":"event2value value2payload","x":760,"y":220,"wires":[["99e055cc.8a09f"]]},{"id":"99e055cc.8a09f","type":"debug","z":"7b300eeb.eca0e","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","targetType":"msg","x":1010,"y":220,"wires":[]},{"id":"75932ee4.0cc","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: String","info":"","x":130,"y":220,"wires":[]},{"id":"cae750d6.c92f7","type":"inject","z":"7b300eeb.eca0e","name":"10.8","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[64,49,48,46,56],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":260,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"365000b6.de23f8","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: String","info":"","x":130,"y":300,"wires":[]},{"id":"9ca74a6b.309478","type":"inject","z":"7b300eeb.eca0e","name":"21930","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[96,85,170],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":340,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"a758fa62.29154","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: normalized","info":"","x":140,"y":460,"wires":[]},{"id":"ed7a4873.78a3d8","type":"inject","z":"7b300eeb.eca0e","name":"-0.00115","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[136,133,141],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":500,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"f2bc8e83.dd627","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: normalized","info":"","x":140,"y":540,"wires":[]},{"id":"6efae03e.af699","type":"inject","z":"7b300eeb.eca0e","name":"-1","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[136,0,255,255,255,255,255,255],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":580,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"f125be4.f922cc","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: float","info":"","x":120,"y":620,"wires":[]},{"id":"bc6d3d2.1ba574","type":"inject","z":"7b300eeb.eca0e","name":"9.909819","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[160,65,30,142,158],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":660,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"cd4709b3.26c138","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREMENT64 - 60","info":"","x":150,"y":720,"wires":[]},{"id":"3f1c53d2.56f914","type":"inject","z":"7b300eeb.eca0e","name":"124.372","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":60,\"vscpType\":6,\"vscpData\":[64,95,23,206,217,22,135,43],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":760,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"49e25db8.62c234","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREMENT -  10","info":"","x":170,"y":20,"wires":[]},{"id":"7e44e793.f847e8","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREZONE - 65","info":"","x":150,"y":820,"wires":[]},{"id":"c605e90e.2954d","type":"inject","z":"7b300eeb.eca0e","name":"-0.00115","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":65,\"vscpType\":6,\"vscpData\":[0,1,2,136,133,141],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":860,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"8a60bc5c.66f788","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREMENT32 - 70","info":"","x":150,"y":920,"wires":[]},{"id":"b182aca1.0f67b8","type":"inject","z":"7b300eeb.eca0e","name":"9.909819","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[160,65,30,142,158],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":960,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"82a6fb82.4bc948","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.SETVALUEZONE - 85","info":"","x":150,"y":1020,"wires":[]},{"id":"6c7b0931.9aacf8","type":"inject","z":"7b300eeb.eca0e","name":"10.8","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":85,\"vscpType\":6,\"vscpData\":[0,1,2,64,49,48,46,56],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":1060,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"e5de87c1.258218","type":"comment","z":"7b300eeb.eca0e","name":"CLASS2.MEASUREMENT_STR - 1040","info":"","x":170,"y":1120,"wires":[]},{"id":"dc5b3f00.6357a8","type":"inject","z":"7b300eeb.eca0e","name":"1234567.89","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":1040,\"vscpType\":6,\"vscpData\":[0,1,2,0,49,50,51,52,53,54,55,46,56,57],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":110,"y":1160,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"3fadc9e0.37934e","type":"comment","z":"7b300eeb.eca0e","name":"CLASS2.MEASUREMENT_FLOAT - 1060","info":"","x":180,"y":1220,"wires":[]},{"id":"e2fdd13f.4eb138","type":"inject","z":"7b300eeb.eca0e","name":"-876.12","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":1060,\"vscpType\":6,\"vscpData\":[0,1,2,0,192,139,96,245,194,143,92,41],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":1260,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]}]
+```
+
 ---
 
 ## Using with node vscp modules
@@ -237,7 +258,7 @@ Now restart node-red with
 systemctl restart nodered
 ```
 
-in a **function node** you can now refere to VSCP events symbolically, like
+in a **function node** you can now refer to VSCP events symbolically, like
 
 ```javascript
  var ev = new (global.get('vscp')).Event({
@@ -249,7 +270,7 @@ in a **function node** you can now refere to VSCP events symbolically, like
     vscpData: [0x89,0x82,0xFE,0xDC]
 });
 msg.payload = ev;
-return msg; 
+return msg;
 ```
 
 

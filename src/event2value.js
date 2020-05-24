@@ -47,6 +47,15 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
+        this.bTransparent = config.bTransparent;
+        this.bValue2Payload = config.bvalue2payload;
+
+        // bTransparent have no meaning if bValue2Payload
+        // is set to true
+        if (this.bValue2Payload && this.bTransparent) {
+            this.bTransparent = false;
+        }
+
         // Convert VSCP measurement event to value
         node.on('input', function(msg, send, done) {
 
@@ -55,11 +64,23 @@ module.exports = function(RED) {
 
             // Do nothing iof no measurement
             if ( !vscp.isMeasurement(ev.vscpClass) ) {
+                
+                // If this is pre-1.0, 'send' will be undefined, so fallback to node.send
+                send = send || function() {
+                    node.send.apply(node, arguments)
+                }
+
+                // If transparent is selected we let all events 
+                // (also non measurement events) pass through.
+                if ( this.bTransparent ) {
+                    send(msg);
+                }
+
                 done();
                 return;
             }
 
-            // Init meaurement object with defaulrs
+            // Init measurement object with defaults
             msg.measurement = {};
             msg.measurement.value = NaN;
             msg.measurement.unit= 0;
@@ -80,31 +101,31 @@ module.exports = function(RED) {
             }
 
             // CLASS1.MEASUREMENT
-            if ( (vscpclass.VSCP_CLASS1_MEASUREMENT == _class) ||
-                    (vscpclass.VSCP_CLASS1_MEASUREMENTX1 == _class) || 
-                    (vscpclass.VSCP_CLASS1_MEASUREMENTX2 == _class) ||
-                    (vscpclass.VSCP_CLASS1_MEASUREMENTX3 == _class) ||
-                    (vscpclass.VSCP_CLASS1_MEASUREMENTX4 == _class) ) {
+            if ( (vscpclass.VSCP_CLASS1_MEASUREMENT == ev.vscpClass) ||
+                    (vscpclass.VSCP_CLASS1_MEASUREMENTX1 == ev.vscpClass) || 
+                    (vscpclass.VSCP_CLASS1_MEASUREMENTX2 == ev.vscpClass) ||
+                    (vscpclass.VSCP_CLASS1_MEASUREMENTX3 == ev.vscpClass) ||
+                    (vscpclass.VSCP_CLASS1_MEASUREMENTX4 == ev.vscpClass) ) {
                 msg.measurement.unit = vscp.getUnit(_data[0]);
                 msg.measurement.sensorindex = vscp.getSensorIndex(_data[0]);                        
                 msg.measurement.value = vscp.decodeMeasurementClass10(_data);                
             }
             // CLASS1.MEASUREMENT64
-            else if ( ( vscpclass.VSCP_CLASS1_MEASUREMENT64 == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X1 == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X2 == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X3 == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X4 == _class) ) {
-                msg.measurement.unit = 0:
+            else if ( ( vscpclass.VSCP_CLASS1_MEASUREMENT64 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X1 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X2 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X3 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT64X4 == ev.vscpClass) ) {
+                msg.measurement.unit = 0;
                 msg.measurement.sensorindex = 0;
                 msg.measurement.value = vscp.decodeMeasurementClass60(_data);
             }
             // CLASS1.MEASUREZONE
-            else if ( (vscpclass.VSCP_CLASS1_MEASUREZONE == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREZONEX1 == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREZONEX2 == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREZONEX3 == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREZONEX4 == _class) ) {
+            else if ( (vscpclass.VSCP_CLASS1_MEASUREZONE == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREZONEX1 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREZONEX2 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREZONEX3 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREZONEX4 == ev.vscpClass) ) {
                 msg.measurement.index = _data[0]; 
                 msg.measurement.zone = _data[1];
                 msg.measurement.subzone = _data[2];                           
@@ -113,21 +134,21 @@ module.exports = function(RED) {
                 msg.measurement.value = vscp.decodeMeasurementClass65(_data);
             }
             // CLASS1.MEASUREMENT32
-            else if ( (vscpclass.VSCP_CLASS1_MEASUREMENT32 == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X1 == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X2 == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X3 == _class) ||
-                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X4 == _class) ) {
-                msg.measurement.unit = 0:
+            else if ( (vscpclass.VSCP_CLASS1_MEASUREMENT32 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X1 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X2 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X3 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_MEASUREMENT32X4 == ev.vscpClass) ) {
+                msg.measurement.unit = 0;
                 msg.measurement.sensorindex = 0;            
                 msg.measurement.value = vscp.decodeClass60(_data);
             }
             // CLASS1.SETVALUEZONE
-            else if ( (vscpclass.VSCP_CLASS1_SETVALUEZONE == _class) ||
-                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX1 == _class) ||
-                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX2 == _class) ||
-                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX3 == _class) ||
-                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX4 == _class) ) {
+            else if ( (vscpclass.VSCP_CLASS1_SETVALUEZONE == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX1 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX2 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX3 == ev.vscpClass) ||
+                        (vscpclass.VSCP_CLASS1_SETVALUEZONEX4 == ev.vscpClass) ) {
                 msg.measurement.index = _data[0]; 
                 msg.measurement.zone = _data[1];
                 msg.measurement.subzone = _data[2];                           
@@ -153,6 +174,16 @@ module.exports = function(RED) {
             }
 
             debuglog("msg.payload",msg.measurement);
+
+            if (this.bValue2Payload) {
+                msg.event = msg.payload;
+                if ( typeof msg.measurement.value === 'bigint' ) {
+                    msg.payload = parseInt(msg.measurement.value);
+                }
+                else {
+                    msg.payload = msg.measurement.value;
+                }
+            }
 
             // If this is pre-1.0, 'send' will be undefined, so fallback to node.send
             send = send || function() {
