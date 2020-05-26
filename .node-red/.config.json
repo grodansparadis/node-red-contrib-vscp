@@ -361,7 +361,7 @@
   },
   "node-red-contrib-vscp": {
    "name": "node-red-contrib-vscp",
-   "version": "1.1.0",
+   "version": "1.2.1",
    "local": true,
    "nodes": {
     "vscp2can": {
@@ -413,6 +413,16 @@
      "local": true,
      "module": "node-red-contrib-vscp",
      "file": "/home/akhe/development/VSCP/node-red-contrib-vscp/.node-red/node_modules/node-red-contrib-vscp/src/event2value.js"
+    },
+    "m-filter": {
+     "name": "m-filter",
+     "types": [
+      "m-filter"
+     ],
+     "enabled": true,
+     "local": true,
+     "module": "node-red-contrib-vscp",
+     "file": "/home/akhe/development/VSCP/node-red-contrib-vscp/.node-red/node_modules/node-red-contrib-vscp/src/measurementfilter.js"
     }
    }
   },

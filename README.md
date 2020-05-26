@@ -1,9 +1,10 @@
+# node-red-contrib-vscp
+
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://choosealicense.com/licenses/mit/)
 [![Travis Build Status](https://api.travis-ci.org/grodansparadis/node-red-contrib-vscp-tcp.svg?branch=master)](https://travis-ci.org/grodansparadis/node-red-contrib-vscp)
 
 <img src="https://vscp.org/images/logo.png" width="100">
 
-# node-red-contrib-vscp
 A collection of VSCP (Very Simple Control Protocol) nodes that support building of IoT, m2m and automation related flows.
 
 This assumes you have Node-RED already installed and working, if you need to install Node-RED see [here](https://nodered.org/docs/getting-started/installation)
@@ -101,7 +102,40 @@ Input can be on VSCP event object form or VSCP string form. Output is always on 
 
 ---
 
+## m-filter node
+![mfilter](./images/mfilter.png)
 
+A common situation is to redircet flows from different sensor to sub flows. This can easily be done by using a function node with code looking something like this
+
+![Separated flows](./images/redirected_flow.png)
+
+where the two function nodes have the following content
+
+```javascript
+if ( msg.measurement.sensorindex === 6) {
+    return msg;
+}
+```
+
+and 
+
+```javascript
+if ( msg.measurement.sensorindex === 6) {
+    return msg;
+}
+```
+
+To simplify this handling the **m-filter** node is available. It can filter on
+
+* unit
+* sensorindex
+* index
+* zone
+* subzone
+
+Enter a value in respective field to let thru only events that have that specific value or leave the field blank to accept events that have any value in that field.
+
+---
 
 ### How to use
 

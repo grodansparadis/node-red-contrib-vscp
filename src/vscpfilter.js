@@ -137,7 +137,7 @@ module.exports = function(RED) {
             }
             // Invalid format
             else {
-                node.error("Payload has invalid format (should be canmsg object or string)", msg);
+                node.error("Payload has invalid format (should be VSCP event object or string)", msg);
             }
 
             done();
