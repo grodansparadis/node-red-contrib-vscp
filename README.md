@@ -297,8 +297,8 @@ in a **function node** you can now refer to VSCP events symbolically, like
 ```javascript
  var ev = new (global.get('vscp')).Event({
     vscpHead: global.get('vscp').priority.PRIORITY_6 << 5,
-    vscpClass: global.get('vscp_class').VSCP_CLASS1_MEASUREMENT,
-    vscpType: global.get('vscp_type').VSCP_TYPE_MEASUREMENT_TEMPERATURE,
+    vscpClass: global.get('vscpclass').VSCP_CLASS1_MEASUREMENT,
+    vscpType: global.get('vscptype').VSCP_TYPE_MEASUREMENT_TEMPERATURE,
     vscpGuid: "FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:40:59:96:00:01",
     vscpsizeData: 4,
     vscpData: [0x89,0x82,0xFE,0xDC]
@@ -317,7 +317,7 @@ The VSCP subsystem consist of many system components.
 The VSCP daemon is a central piece of software that act as a hub for VSCP based hardware or hardware that abstract as VSCP hardware, You can find the documentation for the VSCP daemon [here](https://docs.vscp.org/#vscpd).
 
 ### VSCP Works
-VSCP works is a tool that make sinteraction with VSCP system components easy. VSCP Works is documented [here](https://docs.vscp.org/#vscpworks).
+VSCP works is a tool that make interaction with VSCP system components easy. VSCP Works is documented [here](https://docs.vscp.org/#vscpworks).
 
 ### VSCP Helper library
 The VSCP helper library is a c/c++ library with common VSCP functionality. It is available for Python to and will be available for PHP and node.js. It is documented [here](https://docs.vscp.org/#vscphelper);  

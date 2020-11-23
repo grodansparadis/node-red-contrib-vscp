@@ -417,7 +417,6 @@
     "m-filter": {
      "name": "m-filter",
      "types": [
-      "measurementfilter",
       "m-filter"
      ],
      "enabled": true,
