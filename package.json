@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-vscp",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "A collection of VSCP (Very Simple Control Protocol) nodes",
   "main": "index.js",
   "scripts": {
@@ -50,6 +50,7 @@
   },
   "homepage": "https://github.com/grodansparadis/node-red-contrib-vscp#readme",
   "dependencies": {
+    "ini": "^2.0.0",
     "node-vscp": "^1.1.17",
     "node-vscp-class": "^1.0.10",
     "node-vscp-type": "^1.0.8",
