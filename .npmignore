@@ -1,5 +1,7 @@
 node-red-contrib-vscp
 .node-red
 .git
+.github
+.vscode
 .gitignore
 
