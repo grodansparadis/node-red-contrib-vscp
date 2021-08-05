@@ -1,0 +1,152 @@
+<!--
+///////////////////////////////////////////////////////////////////////////
+// measurementfilter.html
+//
+// This file is part of the VSCP (https://www.vscp.org)
+//
+// The MIT License (MIT)
+//
+// Copyright © 2020 Ake Hedman, Grodans Paradis AB
+// <info@grodansparadis.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
+-->
+
+<script type="text/html" data-template-name="m-filter">
+    <div class="form-row">
+        <label for="node-input-unit"><i class="icon-tag"></i> unit</label>
+        <input type="text" id="node-input-unit" placeholder="unit">
+    </div>
+    <div class="form-row">
+        <label for="node-input-sensorindex"><i class="icon-tag"></i> sensorindex</label>
+        <input type="text" id="node-input-sensorindex" placeholder="sensorindex">
+    </div>
+    <div class="form-row">
+        <label for="node-input-index"><i class="icon-tag"></i> index</label>
+        <input type="text" id="node-input-index" placeholder="index">
+    </div>
+    <div class="form-row">
+        <label for="node-input-zone"><i class="icon-tag"></i> zone</label>
+        <input type="text" id="node-input-zone" placeholder="zone">
+    </div>
+    <div class="form-row">
+        <label for="node-input-subzone"><i class="icon-tag"></i> subzone</label>
+        <input type="text" id="node-input-subzone" placeholder="subzone">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> name</label>
+        <input type="text" id="node-input-name" placeholder="name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="m-filter">
+    <p>A node that filters VSCP measurement events on unit, 
+        sensorindex, index, zone and subzone. 
+        All non measurement events will be filtered out and also 
+        measurement events that does not have a msg.measurement 
+        object.
+    </p>
+    <p>
+        <b>unit: </b> Set to unit that should ber accepted or leave 
+        blank to accept all units.
+    </p>   
+    <p>
+        <b>sensorindex: </b> Set to sensorindex that should be accept 
+        or leave empty to accept all sensorindexes. 
+    </p> 
+    <p>
+        <b>index: </b> Set to index that should be accept or leave 
+        empty to accept all indexes. 
+    </p>
+    <p>
+        <b>zone: </b> Set to zone that should be accept or leave 
+        empty to accept all zones.
+    </p>
+    <p>
+        <b>sunzone: </b> Set to subzone that should be accept or 
+        leave empty to accept all subzones.
+    </p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dd> One input is available and is a <b>VSCP event object</b>
+        </dd>
+        <dt class="optional">payload <span class="property-type">object</span></dt>
+        <dd> A VSCP event object typically looks likes this 
+<pre>
+{
+    vscpHead: 3,
+    vscpClass: 10,
+    vscpType: 6,
+    vscpGuid: "FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:40:59:96:00:01",
+    vscpData: [0x89,0x82,0xFE,0xDC]
+}
+</pre>
+            <ul>     
+                <li> <b>vscpHead</b> - The VSCP event header</li>
+                <li> <b>vscpClass</b> - The VSCP class for the event.</li>
+                <li> <b>vscpType</b> - The VSCP type for the event.</li>           
+                <li> <b>vscpData</b> - An array, a comma separated list or a buffer 
+                    with data bytes. Set to null if no data. Max 512 bytes.</li>
+                <li> <b>vscpTimestamp</b> - A micro second timestamp. Can be left 
+                    out and will be set to an appropriate default if it is.</li>
+                <li> <b>vscpDateTime</b> - An ISO time object set to UTC time. Can be 
+                    left out.</li>
+                <li> <b>vscpObid</b> - Event object id. Used by some software and 
+                    can be left out.</li>     
+            </ul>              
+        </dd>          
+ 
+    </dl>
+
+    <h3>Outputs</h3>
+    <dl class="node-ports">
+        <li>
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">object</span></dt>
+                <dd>If a VSCP measurement event is accepted by the filters
+                    the original event object on the input is sent here.
+                </dd>    
+
+            </dl>
+        </li>    
+    </dl>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('m-filter',{
+        category: 'vscp',
+        color: '#ffe033',
+        defaults: {
+            unit: { value : "" },
+            sensorindex: { value : "" },
+            index: { value : "" },
+            zone: { value : "" },
+            subzone: { value : "" },
+            name: { name : "" }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "arrow-in.png",
+        label: function() {
+            return this.name||"m-filter";
+        }
+    });
+</script>
