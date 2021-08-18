@@ -1,0 +1,6 @@
+Change log for the node-red-contrib-vscp
+========================================
+
+210818 AKHE  event2value transparent mode fixed #11
+210818 AKHE  event2value measurement objects now go to payload #12
+210818 AKHE  Updated dependencies.

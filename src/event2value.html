@@ -6,7 +6,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright © 2020 Ake Hedman, Grodans Paradis AB
+// Copyright © 2020-2021 Ake Hedman, Grodans Paradis AB
 // <info@grodansparadis.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -41,6 +41,17 @@
             />
             Transparent
         </label>
+    </div>
+    <div class="form-row">
+      <label style="margin-left: 100px; width: 70%">
+          <input
+              type="checkbox"
+              id="node-input-btopayload"
+              placeholder=""
+              style="width: 20px; margin: -4px 0 0 0;"
+          />
+          Measurement to payload
+      </label>
     </div>
     <div class="form-row">
         <label style="margin-left: 100px; width: 70%">
@@ -86,10 +97,16 @@
     </dd>
 
     <dd>
-        If Transparent checkbox is checked all event are feed to the outputs
+        If the Transparent checkbox is checked all event are feed to the outputs
         regardless if they are measurement events or not. 
         If it is not checked only measurement event will be feed to the 
         output.
+    </dd>
+
+    <dd>
+      If Measurement to payload checkbox is checked all the measurement object is placed
+      in the payload. This is the standard format for VSCP JSON data. 
+      If it is not checked the measurement object is placed at the message top level.
     </dd>
 
     <h3>Inputs</h3>
@@ -171,9 +188,10 @@
         category: 'vscp',
         color: '#ffe033',
         defaults: {
-            btransparent: { value: 0 },
-            bvalue2payload: { value: 0 },
-            name: {value:""}
+          name: {value:""},
+          btransparent: { value: false },
+          btopayload: {value: true},
+          bvalue2payload: { value: false }            
         },
         inputs:1,
         outputs:1,

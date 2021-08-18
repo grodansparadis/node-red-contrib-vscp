@@ -91,12 +91,12 @@ The event2value node can handle all measurement classes and translate the data t
 
 The event2value node will do one of two things.
 
-- It will add fields *value*,  *unit*, *sensorindex* and in cases where it's relevant **index**, **zone** and *subzone* to the msg object under the tag __msg.measurement__ before it is transferred to the output of the node. This is the **default**. The payload will contain the original event.
+- It will add fields *value*,  *unit*, *sensorindex* and in cases where it's relevant **index**, **zone** and *subzone* to the msg object under the tag __msg.payload.measurement__ (if the checkbox **Measurement ot payload** is checked (default)) or __msg.measurement__ (not recommended) before it is transferred to the output of the node. This is the **default**. The payload will contain the original event.
 - It will replace msg.payload with the measurement value. The event is still available as msg.event, and meassage relevant data such as unit is in msg.measurement. The checkbox **Value to payload** should be checked for this to happen.
 
 If the checkbox **Transparent** is checked all events will be feed through the node even if they are not measurement events. This means that the msg.measurement will be added to all measurements events but not to other events and therefore look like any other VSCP event for nodes that are VSCP aware.
 
-Future VSCP nodes may relay on the payload carrying a VSCP event for there processing. It is therefore a better choice to write code that use _msg.measurement.value_ instead of moving the value to msg.payload. At least this is true in all cases except when the node is places last in the stream and a value is left to be processed by displaying it, do calculations etc. But the choice is in the end of course up to the user.
+Future VSCP nodes may relay on the payload carrying a VSCP event for there processing. It is therefore a better choice to write code that use __msg.payload.measurement.value__ instead of moving the value to msg.payload. At least this is true in all cases except when the node is places last in the stream and a value is left to be processed by displaying it, do calculations etc. But the choice is in the end of course up to the user.
 
 Input can be on VSCP event object form or VSCP string form. Output is always on VSCP event object form.
 
