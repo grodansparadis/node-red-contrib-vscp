@@ -477,43 +477,5 @@
                 "file": "/home/akhe/development/VSCP/node-red-contrib-vscp/.node-red/node_modules/node-red-contrib-vscp/src/measurementfilter.js"
             }
         }
-    },
-    "node-red-node-rbe": {
-        "name": "node-red-node-rbe",
-        "version": "0.2.9",
-        "local": false,
-        "user": false,
-        "nodes": {
-            "rbe": {
-                "name": "rbe",
-                "types": [
-                    "rbe"
-                ],
-                "enabled": true,
-                "local": false,
-                "user": false,
-                "module": "node-red-node-rbe",
-                "file": "/home/akhe/development/VSCP/node-red-contrib-vscp/node_modules/node-red-node-rbe/rbe.js"
-            }
-        }
-    },
-    "node-red-node-tail": {
-        "name": "node-red-node-tail",
-        "version": "0.1.1",
-        "local": false,
-        "user": false,
-        "nodes": {
-            "tail": {
-                "name": "tail",
-                "types": [
-                    "tail"
-                ],
-                "enabled": true,
-                "local": false,
-                "user": false,
-                "module": "node-red-node-tail",
-                "file": "/home/akhe/development/VSCP/node-red-contrib-vscp/node_modules/node-red-node-tail/28-tail.js"
-            }
-        }
     }
 }
