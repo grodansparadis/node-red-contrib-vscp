@@ -85,7 +85,7 @@ Priority filtering is a bit special compared to the other fields. First one must
 
 For a new VSCP user the measurement classes in VSCP may be both strange at first and even hard to understand. Think of them as different ways for a limited resources device to send data values to a higher level world that have the resources to decode the data. Generally one can say that it is advisable to use Level II measurements in higher level applications like node-red. The VSCP daemon for example have the ability to automatically translate all measurement events from drivers to level II events.
 
-At level II there is two measurement classes available, one that present measurement values on string form [CLASS2.MEASUREMENT_STR](https://docs.vscp.org/spec/latest/#/./class2.measurement_str) and one that present measurement values on floating point form [CLASS2.MEASUREMENT_STR](https://docs.vscp.org/spec/latest/#/./class2.measurement_float).
+At level II there is two measurement classes available, one that present measurement values on string form [CLASS2.MEASUREMENT_STR](https://docs.vscp.org/spec/latest/#/./class2.measurement_str) and one that present measurement values on floating point form [CLASS2.MEASUREMENT_FLOAT](https://docs.vscp.org/spec/latest/#/./class2.measurement_float).
 
 The event2value node can handle all measurement classes and translate the data they carry to a measurement value and still preserve important information such as unit of the data and the origin of the measurement.
 
