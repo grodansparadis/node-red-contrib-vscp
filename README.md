@@ -1,7 +1,6 @@
 # node-red-contrib-vscp
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://choosealicense.com/licenses/mit/)
-[![Travis Build Status](https://api.travis-ci.org/grodansparadis/node-red-contrib-vscp-tcp.svg?branch=master)](https://travis-ci.org/grodansparadis/node-red-contrib-vscp)
 
 <img src="https://vscp.org/images/logo.png" width="100">
 
