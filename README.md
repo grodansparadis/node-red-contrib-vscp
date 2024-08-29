@@ -333,4 +333,4 @@ Checkout [node-red-contrib-vscp-tcp](https://www.npmjs.com/package/node-red-cont
 If you work with CAN, and especially CAN4VSCP, you might find [node-red-contrib-socketcan](https://www.npmjs.com/package/node-red-contrib-socketcan) and  [node-red-contrib-canal](https://www.npmjs.com/package/node-red-contrib-canal) useful.
 
 ---
-Copyright © 2000-2020 Åke Hedman, Grodans Paradis AB
+Copyright © 2020-2024 Åke Hedman, Grodans Paradis AB
