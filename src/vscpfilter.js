@@ -7,7 +7,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright © 2020-2021 Ake Hedman, Grodans Paradis AB
+// Copyright © 2020-2026 Ake Hedman, Grodans Paradis AB
 // <info@grodansparadis.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -82,9 +82,9 @@ module.exports = function(RED) {
                     
                     let priority = vscp.readValue(this.priority);
                     debuglog("Priority: "+ priority + 
-                             " Event: " + vscp.getPriority(msg.payload.vscpHead) +
-                             " - " + msg.payload.vscpHead );
-                    if (priority < vscp.getPriority(msg.payload.vscpHead)) {
+                             " Event: " + vscp.getPriority(msg.payload.head) +
+                             " - " + msg.payload.head );
+                    if (priority < vscp.getPriority(msg.payload.head)) {
                         debuglog("Filtered out on priority");
                         done();
                         return;
@@ -95,10 +95,14 @@ module.exports = function(RED) {
                 // VSCP Class
                 if (this.vscpclass.length) {
                     
-                    let vscpclass = vscp.readValue(this.vscpclass);
-                    debuglog("VSCP Class: "+ vscpclass + 
-                             " Event: " + msg.payload.vscpClass );
-                    if (vscpclass != msg.payload.vscpClass) {
+                    let vscpclass = vscp.readValue(this.class);
+                    debuglog(
+                      "VSCP Class: " +
+                        vscpclass +
+                        " Event: " +
+                        msg.payload.class,
+                    );
+                    if (vscpclass != msg.payload.class) {
                         debuglog("Filtered out on VSCP Class");
                         done();
                         return;
@@ -111,8 +115,8 @@ module.exports = function(RED) {
                     
                     let vscptype = vscp.readValue(this.vscptype);
                     debuglog("VSCP Type: "+ vscptype + 
-                             " Event: " + msg.payload.vscpType );
-                    if (vscptype != msg.payload.vscpType) {
+                             " Event: " + msg.payload.type );
+                    if (vscptype != msg.payload.type) {
                         debuglog("Filtered out on VSCP Type");
                         done();
                         return;
@@ -123,8 +127,8 @@ module.exports = function(RED) {
                 // VSCP GUID
                 if (this.guid.length) {
                     debuglog("VSCP GUID: "+ this.guid + 
-                             " Event: " + msg.payload.vscpGuid );
-                    if ( 0 != msg.payload.vscpGuid.toUpperCase().indexOf(this.guid.toUpperCase()) ) {
+                             " Event: " + msg.payload.guid );
+                    if ( 0 != msg.payload.guid.toUpperCase().indexOf(this.guid.toUpperCase()) ) {
                         debuglog("Filtered out on VSCP GUID");
                         done();
                         return;
