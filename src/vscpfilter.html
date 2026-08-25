@@ -31,8 +31,12 @@
 
 <script type="text/html" data-template-name="vscpfilter">
     <div class="form-row">
-        <label for="node-input-vscppriority"><i class="icon-tag"></i> VSCP Priority</label>
-        <input type="text" id="node-input-vscppriority" placeholder="VSCP Priority">
+        <label for="node-input-filterConfig"><i class="icon-tag"></i> Filter config</label>
+        <input type="text" id="node-input-filterConfig">
+    </div>
+    <div class="form-row">
+        <label for="node-input-priority"><i class="icon-tag"></i> VSCP Priority</label>
+        <input type="text" id="node-input-priority" placeholder="VSCP Priority">
     </div>
     <div class="form-row">
         <label for="node-input-vscpclass"><i class="icon-tag"></i> VSCP Class</label>
@@ -43,8 +47,8 @@
         <input type="text" id="node-input-vscptype" placeholder="VSCP Type">
     </div>
     <div class="form-row">
-        <label for="node-input-vscpguid"><i class="icon-tag"></i> VSCP GUID</label>
-        <input type="text" id="node-input-vscpguid" placeholder="VSCP GUID">
+        <label for="node-input-guid"><i class="icon-tag"></i> VSCP GUID</label>
+        <input type="text" id="node-input-guid" placeholder="VSCP GUID">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
@@ -125,6 +129,7 @@
         category: 'vscp',
         color: '#ffe033',
         defaults: {
+            filterConfig: { value: "", type: "vscp-config-filter", required: false },
             priority: { value : "" },
             vscpclass: { value : "" },
             vscptype: { value : "" },
@@ -134,6 +139,22 @@
         inputs:1,
         outputs:1,
         icon: "arrow-in.png",
+        oneditprepare: function() {
+            $("#node-input-filterConfig").val(this.filterConfig || this.filter || "");
+            $("#node-input-priority").val(this.priority || "");
+            $("#node-input-vscpclass").val(this.vscpclass || "");
+            $("#node-input-vscptype").val(this.vscptype || "");
+            $("#node-input-guid").val(this.guid || "");
+            $("#node-input-name").val(this.name || "");
+        },
+        oneditsave: function() {
+            this.filterConfig = $("#node-input-filterConfig").val();
+            this.priority = $("#node-input-priority").val();
+            this.vscpclass = $("#node-input-vscpclass").val();
+            this.vscptype = $("#node-input-vscptype").val();
+            this.guid = $("#node-input-guid").val();
+            this.name = $("#node-input-name").val();
+        },
         label: function() {
             return this.name||"vscpfilter";
         }

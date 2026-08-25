@@ -46,11 +46,27 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,config);
         var node = this;
 
+        this.filter = RED.nodes.getNode(config.filterConfig || config.filter);
         this.name = config.name;
-        this.priority = config.priority.trim();
+        this.priority = (config.priority || '').trim();
         this.vscpclass = (config.vscpclass || config.class || '').trim();
         this.vscptype = (config.vscptype || config.type || '').trim();
-        this.guid = config.guid.trim();
+        this.guid = (config.guid || '').trim();
+
+        if (this.filter) {
+            if (!this.priority.length) {
+                this.priority = String(this.filter.filterPriority || '').trim();
+            }
+            if (!this.vscpclass.length) {
+                this.vscpclass = String(this.filter.filterClass || '').trim();
+            }
+            if (!this.vscptype.length) {
+                this.vscptype = String(this.filter.filterType || '').trim();
+            }
+            if (!this.guid.length) {
+                this.guid = String(this.filter.filterGuid || '').trim();
+            }
+        }
 
         debuglog("Filter Priority '" + this.priority + "' " +  typeof this.priority );
         debuglog("Filter VSCP Class" + this.vscpclass + "' " +  typeof this.vscpclass );
@@ -67,10 +83,33 @@ module.exports = function(RED) {
 
             debuglog("Payload = " + JSON.stringify(msg.payload) );
 
-            // object
-            if ( typeof msg.payload === 'object' ) {
+            // object/string
+            if ((typeof msg.payload === 'object') || (typeof msg.payload === 'string')) {
 
-                debuglog("Message format = object");
+                debuglog("Message format = " + typeof msg.payload);
+
+                let ev = null;
+                try {
+                    ev = new vscp.Event(msg.payload);
+                }
+                catch (err) {
+                    node.error("Payload has invalid VSCP event format", msg);
+                    done();
+                    return;
+                }
+
+                debuglog(
+                    "Parsed event from " +
+                    typeof msg.payload +
+                    " payload: head=" +
+                    ev.head +
+                    " class=" +
+                    ev.vscpclass +
+                    " type=" +
+                    ev.vscptype +
+                    " guid=" +
+                    (ev.guid || ''),
+                );
 
                 // If this is pre-1.0, 'send' will be undefined, so fallback to node.send
                 send = send || function() {
@@ -82,9 +121,9 @@ module.exports = function(RED) {
                     
                     let priority = vscp.readValue(this.priority);
                     debuglog("Priority: "+ priority + 
-                             " Event: " + vscp.getPriority(msg.payload.head) +
-                             " - " + msg.payload.head );
-                    if (priority < vscp.getPriority(msg.payload.head)) {
+                             " Event: " + vscp.getPriority(ev.head) +
+                             " - " + ev.head );
+                    if (priority < vscp.getPriority(ev.head)) {
                         debuglog("Filtered out on priority");
                         done();
                         return;
@@ -100,9 +139,9 @@ module.exports = function(RED) {
                       "VSCP Class: " +
                         eventClass +
                         " Event: " +
-                        msg.payload.vscpclass,
+                                                ev.vscpclass,
                     );
-                    if (eventClass != msg.payload.vscpclass) {
+                                        if (eventClass != ev.vscpclass) {
                         debuglog("Filtered out on VSCP Class");
                         done();
                         return;
@@ -115,8 +154,8 @@ module.exports = function(RED) {
                     
                     let eventType = vscp.readValue(this.vscptype);
                     debuglog("VSCP Type: "+ eventType + 
-                             " Event: " + msg.payload.vscptype );
-                    if (eventType != msg.payload.vscptype) {
+                             " Event: " + ev.vscptype );
+                    if (eventType != ev.vscptype) {
                         debuglog("Filtered out on VSCP Type");
                         done();
                         return;
@@ -126,9 +165,11 @@ module.exports = function(RED) {
 
                 // VSCP GUID
                 if (this.guid.length) {
+                    const eventGuid = (ev.guid || '').toUpperCase();
+                    const filterGuid = this.guid.toUpperCase();
                     debuglog("VSCP GUID: "+ this.guid + 
-                             " Event: " + msg.payload.guid );
-                    if ( 0 != msg.payload.guid.toUpperCase().indexOf(this.guid.toUpperCase()) ) {
+                             " Event: " + eventGuid );
+                    if (0 != eventGuid.indexOf(filterGuid)) {
                         debuglog("Filtered out on VSCP GUID");
                         done();
                         return;
@@ -141,7 +182,7 @@ module.exports = function(RED) {
             }
             // Invalid format
             else {
-                node.error("Payload has invalid format (should be VSCP event object or string)", msg);
+                node.error("Payload has invalid format (should be VSCP event object or VSCP event string)", msg);
             }
 
             done();

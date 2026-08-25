@@ -34,15 +34,23 @@ const vscp = require('node-vscp');
 module.exports = function(RED) {
     function VscpFilterConfigNode(config) {
         RED.nodes.createNode(this,config);
-        this.name = config.name;
-        this.filterPriority = vscp.readValue(config.filterPriority);
-        this.maskPriority = vscp.readValue(config.maskPriority);
-        this.filterClass = vscp.readValue(config.filterClass);
-        this.maskClass = vscp.readValue(config.maskClass);
-        this.filterType = vscp.readValue(config.filterType);
-        this.maskType = vscp.readValue(config.maskType);
-        this.filterGuid = config.filterGuid;
-        this.maskGuid = config.maskGuid;
+
+        const filterPriority = (config.filterPriority || '0x00').trim();
+        const maskPriority = (config.maskPriority || '0x00').trim();
+        const filterClass = (config.filterClass || '0x0000').trim();
+        const maskClass = (config.maskClass || '0x0000').trim();
+        const filterType = (config.filterType || '0x0000').trim();
+        const maskType = (config.maskType || '0x0000').trim();
+
+        this.name = (config.name || '').trim();
+        this.filterPriority = vscp.readValue(filterPriority);
+        this.maskPriority = vscp.readValue(maskPriority);
+        this.filterClass = vscp.readValue(filterClass);
+        this.maskClass = vscp.readValue(maskClass);
+        this.filterType = vscp.readValue(filterType);
+        this.maskType = vscp.readValue(maskType);
+        this.filterGuid = (config.filterGuid || '').trim();
+        this.maskGuid = (config.maskGuid || '').trim();
     }
     RED.nodes.registerType("vscp-config-filter",VscpFilterConfigNode);
 }
