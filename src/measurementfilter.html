@@ -92,25 +92,24 @@
         <dd> A VSCP event object typically looks likes this 
 <pre>
 {
-    vscpHead: 3,
-    vscpClass: 10,
-    vscpType: 6,
-    vscpGuid: "FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:40:59:96:00:01",
-    vscpData: [0x89,0x82,0xFE,0xDC]
+    head: 3,
+    vscpclass: 10,
+    vscptype: 6,
+    guid: "FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:40:59:96:00:01",
+    data: [0x89,0x82,0xFE,0xDC]
 }
 </pre>
             <ul>     
-                <li> <b>vscpHead</b> - The VSCP event header</li>
-                <li> <b>vscpClass</b> - The VSCP class for the event.</li>
-                <li> <b>vscpType</b> - The VSCP type for the event.</li>           
-                <li> <b>vscpData</b> - An array, a comma separated list or a buffer 
+                <li> <b>head</b> - The VSCP event header</li>
+                <li> <b>vscpclass</b> - The VSCP class for the event.</li>
+                <li> <b>vscptype</b> - The VSCP type for the event.</li>           
+                <li> <b>data</b> - An array, a comma separated list or a buffer 
                     with data bytes. Set to null if no data. Max 512 bytes.</li>
-                <li> <b>vscpTimestamp</b> - A micro second timestamp. Can be left 
+                <li> <b>timestamp:ns</b> - A micro second timestamp. Can be left 
                     out and will be set to an appropriate default if it is.</li>
-                <li> <b>vscpDateTime</b> - An ISO time object set to UTC time. Can be 
-                    left out.</li>
-                <li> <b>vscpObid</b> - Event object id. Used by some software and 
-                    can be left out.</li>     
+                <li> <b>vscpDateTime</b> - An ISO time object set to UTC time. Deprectaed.</li>
+                <li> <b>obid</b> - Event object id. Used by some software and 
+                    can be left out.</li>
             </ul>              
         </dd>          
  

@@ -85,16 +85,16 @@
 <pre>
 {
     head: 3,
-    class: 10,
-    type: 6,
+    vscpclass: 10,
+    vscptype: 6,
     guid: "FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:40:59:96:00:01",
     data: [0x89,0x82,0xFE,0xDC]
 }
 </pre>
             <ul>     
                 <li> <b>head</b> - The VSCP event header</li>
-                <li> <b>class</b> - The VSCP class for the event.</li>
-                <li> <b>type</b> - The VSCP type for the event.</li>           
+                <li> <b>vscpclass</b> - The VSCP class for the event.</li>
+                <li> <b>vscptype</b> - The VSCP type for the event.</li>           
                 <li> <b>data</b> - An array, a comma separated list or a buffer 
                     with data bytes. Set to null if no data. Max 512 bytes.</li>
                 <li> <b>timestamp_ns</b> - A 64-bit Unix timestamp with nanosecond resolution. Can be left 
@@ -126,8 +126,8 @@
         color: '#ffe033',
         defaults: {
             priority: { value : "" },
-            class: { value : "" },
-            type: { value : "" },
+            vscpclass: { value : "" },
+            vscptype: { value : "" },
             guid: { value : "" },
             name: { value : "" }
         },

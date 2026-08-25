@@ -147,7 +147,7 @@ A CAN message can be on two different forms. Either it can be an object
 ```javascript
 {
   id: 656897,
-  timestamp: 0,
+  timestamp_ns: 0,
   data: [ 137, 130, 254, 220 ]
 }
 ```
@@ -176,17 +176,16 @@ The output payload is a VSCP event object on the form
 
 ```javascript
 {
-    "vscpHead": 80,
-    "vscpClass": 10,
-    "vscpType": 6,
-    "vscpGuid": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:2a"
-    "vscpData": [11,22,33,44,55],
-    "vscpTimeStamp": 34565634,
-    "vscpDateTime": "2020-02-24T11:10:59.807Z"
+    "head": 80,
+    "class": 10,
+    "type": 6,
+    "guid": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:2a"
+    "data": [11,22,33,44,55],
+    "timestamp_ns_ns": "0x34565634",
 }
 ```
 
-vscpDateTime is set to current UTC. vscpTomeStamp is resued from CAN message if it has a 'timestamp' member. vscpGuid has the nickname id (LSB of CAN id) set.
+vscpDateTime is set to current UTC. vscpTomeStamp is resued from CAN message if it has a 'timestamp_ns' member. guid has the nickname id (LSB of CAN id) set.
 
 ### Sample flow
 
@@ -211,30 +210,31 @@ Inject a message payload into the node on the VSCP object form
 
 '''javascript
 {
-    vscpHead: 224,
-    vscpClass: 10,
-    vscpType: 6,
-    vscpGuid: "FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:40:59:96:00:01",
-    vscpData: [15,0,1,35],
-    vscpTimeStamp: 32456243,
-    vscpDateTime: "2020-02-24T11:10:59.000Z"
+    head: 224,
+    vscpclass: 10,
+    vscptype: 6,
+    fuid: "FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:40:59:96:00:01",
+    data: [15,0,1,35],
+    timestamp_ns_ns: "0x32456243",
 }
 ```
 
 or on the VSCP string form.
 
 '''javascript
-vscpHead,vscpClass,vscpType,vscpObId,vscpDateTime,vscpTimeStamp,vscpGuid,vspData
+head,class,type,obid,,timestamp_ns_ns,guid,data
 ```
 
-Events must be level I events. That is vscpClass must be less than 512, vscpType must be less than 256 and data length max eight bytes.
+(the missing value between ,, is not a typo, a datestring can be entered here but it is deprecated)
+
+Events must be level I events. That is class must be less than 512, type must be less than 256 and data length max eight bytes.
 
 the output will be a CAN message on this form
 
 ```javascript
 {
   id: 656897,
-  timestamp: 0,
+  timestamp_ns: 0,
   data: [ 137, 130, 254, 220 ]
 }
 ```
@@ -242,7 +242,7 @@ the output will be a CAN message on this form
 ### Sample flow
 
 ```javascript
-[{"id":"5f847c11.bd3ef4","type":"vscp2can","z":"85e70aa5.e41e7","name":"","x":320,"y":420,"wires":[["abae2436.9249f"]]},{"id":"740073f2.bc2394","type":"inject","z":"85e70aa5.e41e7","name":"JSON array","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[11,22,33,44,55],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":130,"y":420,"wires":[["5f847c11.bd3ef4"]]},{"id":"abae2436.9249f","type":"debug","z":"85e70aa5.e41e7","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","targetType":"msg","x":490,"y":420,"wires":[]},{"id":"6c346126.bfba58","type":"inject","z":"85e70aa5.e41e7","name":"String","topic":"","payload":"0,20,3,,2001-11-02T18:00:01,,-,0,1,35","payloadType":"str","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":150,"y":500,"wires":[["5f847c11.bd3ef4"]]},{"id":"7df9ce7e.b5cc98","type":"inject","z":"85e70aa5.e41e7","name":"JSON str","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":\"100,200,99\",\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":140,"y":460,"wires":[["5f847c11.bd3ef4"]]}]
+[{"id":"5f847c11.bd3ef4","type":"vscp2can","z":"85e70aa5.e41e7","name":"","x":320,"y":420,"wires":[["abae2436.9249f"]]},{"id":"740073f2.bc2394","type":"inject","z":"85e70aa5.e41e7","name":"JSON array","topic":"","payload":"{\"head\":80,\"class\":10,\"type\":6,\"data\":[11,22,33,44,55],\"timestamp_ns_ns\":"0x34560000"}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":130,"y":420,"wires":[["5f847c11.bd3ef4"]]},{"id":"abae2436.9249f","type":"debug","z":"85e70aa5.e41e7","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","targetType":"msg","x":490,"y":420,"wires":[]},{"id":"6c346126.bfba58","type":"inject","z":"85e70aa5.e41e7","name":"String","topic":"","payload":"0,20,3,,2001-11-02T18:00:01,,-,0,1,35","payloadType":"str","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":150,"y":500,"wires":[["5f847c11.bd3ef4"]]},{"id":"7df9ce7e.b5cc98","type":"inject","z":"85e70aa5.e41e7","name":"JSON str","topic":"","payload":"{\"head\":80,\"class\":10,\"type\":6,\"data\":\"100,200,99\",\"timestamp_ns_ns\":"0x34560000"}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":140,"y":460,"wires":[["5f847c11.bd3ef4"]]}]
 ```
 
 ### How to use
@@ -258,7 +258,7 @@ The sample flow below inject examples with all measurement classes and output re
 ### Sample flow
 
 ```javascript
-[{"id":"7b300eeb.eca0e","type":"tab","label":"Measurements","disabled":false,"info":""},{"id":"84a31eaf.5f1f98","type":"event2value","z":"7b300eeb.eca0e","btransparent":false,"bvalue2payload":false,"name":"event2value measurement","x":760,"y":180,"wires":[["4ff276ee.97a71"]]},{"id":"7e415e1.56527a","type":"inject","z":"7b300eeb.eca0e","name":"694600","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[136,2,27,34],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":420,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"4ff276ee.97a71","type":"debug","z":"7b300eeb.eca0e","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","x":990,"y":180,"wires":[]},{"id":"ffd0f467.4a8028","type":"inject","z":"7b300eeb.eca0e","name":"Bits","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[0,170,170],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":100,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"45d576da.8c5bc8","type":"inject","z":"7b300eeb.eca0e","name":"[ 2, 27, 34 ]","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[32,2,27,34],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":180,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"de16eff7.222bc8","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: bits","info":"","x":120,"y":60,"wires":[]},{"id":"263e95d3.b51262","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: normalized","info":"","x":140,"y":380,"wires":[]},{"id":"d23145ae.c5d3c8","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: bytes","info":"","x":130,"y":140,"wires":[]},{"id":"e741f244.14599","type":"event2value","z":"7b300eeb.eca0e","btransparent":false,"bvalue2payload":true,"name":"event2value value2payload","x":760,"y":220,"wires":[["99e055cc.8a09f"]]},{"id":"99e055cc.8a09f","type":"debug","z":"7b300eeb.eca0e","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","targetType":"msg","x":1010,"y":220,"wires":[]},{"id":"75932ee4.0cc","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: String","info":"","x":130,"y":220,"wires":[]},{"id":"cae750d6.c92f7","type":"inject","z":"7b300eeb.eca0e","name":"10.8","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[64,49,48,46,56],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":260,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"365000b6.de23f8","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: String","info":"","x":130,"y":300,"wires":[]},{"id":"9ca74a6b.309478","type":"inject","z":"7b300eeb.eca0e","name":"21930","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[96,85,170],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":340,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"a758fa62.29154","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: normalized","info":"","x":140,"y":460,"wires":[]},{"id":"ed7a4873.78a3d8","type":"inject","z":"7b300eeb.eca0e","name":"-0.00115","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[136,133,141],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":500,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"f2bc8e83.dd627","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: normalized","info":"","x":140,"y":540,"wires":[]},{"id":"6efae03e.af699","type":"inject","z":"7b300eeb.eca0e","name":"-1","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[136,0,255,255,255,255,255,255],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":580,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"f125be4.f922cc","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: float","info":"","x":120,"y":620,"wires":[]},{"id":"bc6d3d2.1ba574","type":"inject","z":"7b300eeb.eca0e","name":"9.909819","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[160,65,30,142,158],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":660,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"cd4709b3.26c138","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREMENT64 - 60","info":"","x":150,"y":720,"wires":[]},{"id":"3f1c53d2.56f914","type":"inject","z":"7b300eeb.eca0e","name":"124.372","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":60,\"vscpType\":6,\"vscpData\":[64,95,23,206,217,22,135,43],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":760,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"49e25db8.62c234","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREMENT -  10","info":"","x":170,"y":20,"wires":[]},{"id":"7e44e793.f847e8","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREZONE - 65","info":"","x":150,"y":820,"wires":[]},{"id":"c605e90e.2954d","type":"inject","z":"7b300eeb.eca0e","name":"-0.00115","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":65,\"vscpType\":6,\"vscpData\":[0,1,2,136,133,141],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":860,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"8a60bc5c.66f788","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREMENT32 - 70","info":"","x":150,"y":920,"wires":[]},{"id":"b182aca1.0f67b8","type":"inject","z":"7b300eeb.eca0e","name":"9.909819","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":10,\"vscpType\":6,\"vscpData\":[160,65,30,142,158],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":960,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"82a6fb82.4bc948","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.SETVALUEZONE - 85","info":"","x":150,"y":1020,"wires":[]},{"id":"6c7b0931.9aacf8","type":"inject","z":"7b300eeb.eca0e","name":"10.8","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":85,\"vscpType\":6,\"vscpData\":[0,1,2,64,49,48,46,56],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":1060,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"e5de87c1.258218","type":"comment","z":"7b300eeb.eca0e","name":"CLASS2.MEASUREMENT_STR - 1040","info":"","x":170,"y":1120,"wires":[]},{"id":"dc5b3f00.6357a8","type":"inject","z":"7b300eeb.eca0e","name":"1234567.89","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":1040,\"vscpType\":6,\"vscpData\":[0,1,2,0,49,50,51,52,53,54,55,46,56,57],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":110,"y":1160,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"3fadc9e0.37934e","type":"comment","z":"7b300eeb.eca0e","name":"CLASS2.MEASUREMENT_FLOAT - 1060","info":"","x":180,"y":1220,"wires":[]},{"id":"e2fdd13f.4eb138","type":"inject","z":"7b300eeb.eca0e","name":"-876.12","topic":"","payload":"{\"vscpHead\":80,\"vscpClass\":1060,\"vscpType\":6,\"vscpData\":[0,1,2,0,192,139,96,245,194,143,92,41],\"vscpTimeStamp\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":1260,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]}]
+[{"id":"7b300eeb.eca0e","type":"tab","label":"Measurements","disabled":false,"info":""},{"id":"84a31eaf.5f1f98","type":"event2value","z":"7b300eeb.eca0e","btransparent":false,"bvalue2payload":false,"name":"event2value measurement","x":760,"y":180,"wires":[["4ff276ee.97a71"]]},{"id":"7e415e1.56527a","type":"inject","z":"7b300eeb.eca0e","name":"694600","topic":"","payload":"{\"head\":80,\"class\":10,\"type\":6,\"vscpData\":[136,2,27,34],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":420,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"4ff276ee.97a71","type":"debug","z":"7b300eeb.eca0e","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","x":990,"y":180,"wires":[]},{"id":"ffd0f467.4a8028","type":"inject","z":"7b300eeb.eca0e","name":"Bits","topic":"","payload":"{\"head\":80,\"class\":10,\"type\":6,\"vscpData\":[0,170,170],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":100,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"45d576da.8c5bc8","type":"inject","z":"7b300eeb.eca0e","name":"[ 2, 27, 34 ]","topic":"","payload":"{\"head\":80,\"class\":10,\"type\":6,\"vscpData\":[32,2,27,34],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":180,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"de16eff7.222bc8","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: bits","info":"","x":120,"y":60,"wires":[]},{"id":"263e95d3.b51262","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: normalized","info":"","x":140,"y":380,"wires":[]},{"id":"d23145ae.c5d3c8","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: bytes","info":"","x":130,"y":140,"wires":[]},{"id":"e741f244.14599","type":"event2value","z":"7b300eeb.eca0e","btransparent":false,"bvalue2payload":true,"name":"event2value value2payload","x":760,"y":220,"wires":[["99e055cc.8a09f"]]},{"id":"99e055cc.8a09f","type":"debug","z":"7b300eeb.eca0e","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","targetType":"msg","x":1010,"y":220,"wires":[]},{"id":"75932ee4.0cc","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: String","info":"","x":130,"y":220,"wires":[]},{"id":"cae750d6.c92f7","type":"inject","z":"7b300eeb.eca0e","name":"10.8","topic":"","payload":"{\"head\":80,\"class\":10,\"type\":6,\"vscpData\":[64,49,48,46,56],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":260,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"365000b6.de23f8","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: String","info":"","x":130,"y":300,"wires":[]},{"id":"9ca74a6b.309478","type":"inject","z":"7b300eeb.eca0e","name":"21930","topic":"","payload":"{\"head\":80,\"class\":10,\"type\":6,\"vscpData\":[96,85,170],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":340,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"a758fa62.29154","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: normalized","info":"","x":140,"y":460,"wires":[]},{"id":"ed7a4873.78a3d8","type":"inject","z":"7b300eeb.eca0e","name":"-0.00115","topic":"","payload":"{\"head\":80,\"class\":10,\"type\":6,\"vscpData\":[136,133,141],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":500,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"f2bc8e83.dd627","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: normalized","info":"","x":140,"y":540,"wires":[]},{"id":"6efae03e.af699","type":"inject","z":"7b300eeb.eca0e","name":"-1","topic":"","payload":"{\"head\":80,\"class\":10,\"type\":6,\"vscpData\":[136,0,255,255,255,255,255,255],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":580,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"f125be4.f922cc","type":"comment","z":"7b300eeb.eca0e","name":"Datacoding: float","info":"","x":120,"y":620,"wires":[]},{"id":"bc6d3d2.1ba574","type":"inject","z":"7b300eeb.eca0e","name":"9.909819","topic":"","payload":"{\"head\":80,\"class\":10,\"type\":6,\"vscpData\":[160,65,30,142,158],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":660,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"cd4709b3.26c138","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREMENT64 - 60","info":"","x":150,"y":720,"wires":[]},{"id":"3f1c53d2.56f914","type":"inject","z":"7b300eeb.eca0e","name":"124.372","topic":"","payload":"{\"head\":80,\"class\":60,\"type\":6,\"vscpData\":[64,95,23,206,217,22,135,43],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":760,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"49e25db8.62c234","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREMENT -  10","info":"","x":170,"y":20,"wires":[]},{"id":"7e44e793.f847e8","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREZONE - 65","info":"","x":150,"y":820,"wires":[]},{"id":"c605e90e.2954d","type":"inject","z":"7b300eeb.eca0e","name":"-0.00115","topic":"","payload":"{\"head\":80,\"class\":65,\"type\":6,\"vscpData\":[0,1,2,136,133,141],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":860,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"8a60bc5c.66f788","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.MEASUREMENT32 - 70","info":"","x":150,"y":920,"wires":[]},{"id":"b182aca1.0f67b8","type":"inject","z":"7b300eeb.eca0e","name":"9.909819","topic":"","payload":"{\"head\":80,\"class\":10,\"type\":6,\"vscpData\":[160,65,30,142,158],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":100,"y":960,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"82a6fb82.4bc948","type":"comment","z":"7b300eeb.eca0e","name":"CLASS1.SETVALUEZONE - 85","info":"","x":150,"y":1020,"wires":[]},{"id":"6c7b0931.9aacf8","type":"inject","z":"7b300eeb.eca0e","name":"10.8","topic":"","payload":"{\"head\":80,\"class\":85,\"type\":6,\"vscpData\":[0,1,2,64,49,48,46,56],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":1060,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"e5de87c1.258218","type":"comment","z":"7b300eeb.eca0e","name":"CLASS2.MEASUREMENT_STR - 1040","info":"","x":170,"y":1120,"wires":[]},{"id":"dc5b3f00.6357a8","type":"inject","z":"7b300eeb.eca0e","name":"1234567.89","topic":"","payload":"{\"head\":80,\"class\":1040,\"type\":6,\"vscpData\":[0,1,2,0,49,50,51,52,53,54,55,46,56,57],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":110,"y":1160,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]},{"id":"3fadc9e0.37934e","type":"comment","z":"7b300eeb.eca0e","name":"CLASS2.MEASUREMENT_FLOAT - 1060","info":"","x":180,"y":1220,"wires":[]},{"id":"e2fdd13f.4eb138","type":"inject","z":"7b300eeb.eca0e","name":"-876.12","topic":"","payload":"{\"head\":80,\"class\":1060,\"type\":6,\"vscpData\":[0,1,2,0,192,139,96,245,194,143,92,41],\"vscptimestamp_ns\":3456}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":90,"y":1260,"wires":[["84a31eaf.5f1f98","e741f244.14599"]]}]
 ```
 
 ---
@@ -295,10 +295,10 @@ in a **function node** you can now refer to VSCP events symbolically, like
 
 ```javascript
  var ev = new (global.get('vscp')).Event({
-    vscpHead: global.get('vscp').priority.PRIORITY_6 << 5,
-    vscpClass: global.get('vscpclass').VSCP_CLASS1_MEASUREMENT,
-    vscpType: global.get('vscptype').VSCP_TYPE_MEASUREMENT_TEMPERATURE,
-    vscpGuid: "FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:40:59:96:00:01",
+    head: global.get('vscp').priority.PRIORITY_6 << 5,
+    vscpclass: global.get('class').VSCP_CLASS1_MEASUREMENT,
+    vscptype: global.get('type').VSCP_TYPE_MEASUREMENT_TEMPERATURE,
+    guid: "FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:40:59:96:00:01",
     vscpsizeData: 4,
     vscpData: [0x89,0x82,0xFE,0xDC]
 });

@@ -53,8 +53,8 @@ module.exports = function(RED) {
         this.subzone = config.subzone.trim();
 
         debuglog("unit '" + this.unit + "' " +  typeof this.priority );
-        debuglog("sensorindex" + this.sensorindex + "' " +  typeof this.vscpclass );
-        debuglog("index" + this.index + "' " +  typeof this.vscptype );
+        debuglog("sensorindex" + this.sensorindex + "' " +  typeof this.sensorindex );
+        debuglog("index" + this.index + "' " +  typeof this.index );
         debuglog("zone" + this.zone + "' " +  typeof this.zone );
         debuglog("subzone" + this.subzone + "' " +  typeof this.subzone );
 

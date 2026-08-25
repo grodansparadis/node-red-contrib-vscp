@@ -47,10 +47,10 @@ module.exports = function(RED) {
         var node = this;
 
         this.name = config.name;
-        this.priority = config.vscppriority.trim();
-        this.vscpclass = config.vscpclass.trim();
-        this.vscptype = config.vscptype.trim();
-        this.guid = config.vscpguid.trim();
+        this.priority = config.priority.trim();
+        this.vscpclass = (config.vscpclass || config.class || '').trim();
+        this.vscptype = (config.vscptype || config.type || '').trim();
+        this.guid = config.guid.trim();
 
         debuglog("Filter Priority '" + this.priority + "' " +  typeof this.priority );
         debuglog("Filter VSCP Class" + this.vscpclass + "' " +  typeof this.vscpclass );
@@ -95,14 +95,14 @@ module.exports = function(RED) {
                 // VSCP Class
                 if (this.vscpclass.length) {
                     
-                    let vscpclass = vscp.readValue(this.class);
+                    let eventClass = vscp.readValue(this.vscpclass);
                     debuglog(
                       "VSCP Class: " +
-                        vscpclass +
+                        eventClass +
                         " Event: " +
-                        msg.payload.class,
+                        msg.payload.vscpclass,
                     );
-                    if (vscpclass != msg.payload.class) {
+                    if (eventClass != msg.payload.vscpclass) {
                         debuglog("Filtered out on VSCP Class");
                         done();
                         return;
@@ -113,10 +113,10 @@ module.exports = function(RED) {
                 // VSCP Type
                 if (this.vscptype.length) {
                     
-                    let vscptype = vscp.readValue(this.vscptype);
-                    debuglog("VSCP Type: "+ vscptype + 
-                             " Event: " + msg.payload.type );
-                    if (vscptype != msg.payload.type) {
+                    let eventType = vscp.readValue(this.vscptype);
+                    debuglog("VSCP Type: "+ eventType + 
+                             " Event: " + msg.payload.vscptype );
+                    if (eventType != msg.payload.vscptype) {
                         debuglog("Filtered out on VSCP Type");
                         done();
                         return;
