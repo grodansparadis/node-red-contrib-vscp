@@ -90,8 +90,7 @@ The event2value node can handle all measurement classes and translate the data t
 
 The event2value node will do one of two things.
 
-- It will add fields *value*,  *unit*, *sensorindex* and in cases where it's relevant **index**, **zone** and *subzone* to the msg object under the tag __msg.payload.measurement__ (if the checkbox **Measurement ot payload** is checked (default)) or __msg.measurement__ (not recommended) before it is transferred to the output of the node. This is the **default**. The payload will contain the original event.
-- It will replace msg.payload with the measurement value. The event is still available as msg.event, and meassage relevant data such as unit is in msg.measurement. The checkbox **Value to payload** should be checked for this to happen.
+- It will add fields *value*,  *unit*, *sensorindex* and in cases where it's relevant **index**, **zone** and *subzone* to the msg object under the tag __msg.payload.measurement__. If the checkbox **Measurement to payload** is checked msg.payload will get the measurement data.  If **value to payload** is checked then msg.payload will get the value. The event is still available as msg.event, and meassage relevant data such as unit is in msg.measurement. 
 
 If the checkbox **Transparent** is checked all events will be feed through the node even if they are not measurement events. This means that the msg.measurement will be added to all measurements events but not to other events and therefore look like any other VSCP event for nodes that are VSCP aware.
 
